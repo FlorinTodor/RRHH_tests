@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examen V/F - Dirección de RRHH</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+        .question-area {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #e9e9e9;
+            border-radius: 5px;
+        }
+        .question-text {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+        .options button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        .options button.true {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .options button.false {
+            background-color: #f44336;
+            color: white;
+        }
+        .feedback-area {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .feedback-area.correct {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .feedback-area.incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .feedback-area .explanation {
+            font-style: italic;
+            font-size: 0.9em;
+            font-weight: normal;
+            margin-top: 5px;
+        }
+        .navigation button {
+            padding: 10px 20px;
+            margin-top: 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        #start-button, #next-question-button {
+            display: block;
+            margin: 20px auto;
+        }
+        .results-area {
+            margin-top: 30px;
+        }
+        .results-area p {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .result-item {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .result-item.correct {
+            background-color: #d4edda;
+            border-left: 5px solid #28a745;
+        }
+        .result-item.incorrect {
+            background-color: #f8d7da;
+            border-left: 5px solid #dc3545;
+        }
+        .result-item p {
+            margin: 5px 0;
+            font-size: 1em;
+            font-weight: normal;
+        }
+        .result-item .explanation {
+            font-style: italic;
+            font-size: 0.9em;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Examen Verdadero/Falso</h1>
+        <h2 id="subject-title">Dirección de Recursos Humanos</h2>
+
+        <div id="quiz-setup">
+            <button id="start-button" class="navigation" onclick="startQuiz()">Comenzar Examen (~30 Preguntas)</button>
+        </div>
+
+        <div id="quiz-area" style="display:none;">
+            <div class="question-area">
+                <p id="question-number"></p>
+                <p id="question-text" class="question-text"></p>
+                <div class="options">
+                    <button id="true-button" class="true" onclick="selectAnswer(true)">Verdadero</button>
+                    <button id="false-button" class="false" onclick="selectAnswer(false)">Falso</button>
+                </div>
+                <div id="feedback-area" class="feedback-area" style="display:none;">
+                    <p id="feedback-text"></p>
+                    <p id="feedback-explanation" class="explanation"></p>
+                </div>
+            </div>
+            <div class="navigation">
+                 <button id="next-question-button" style="display:none;" onclick="nextQuestion()">Siguiente Pregunta</button>
+            </div>
+        </div>
+
+        <div id="results-area" class="results-area" style="display:none;">
+            <h2>Resultados del Examen</h2>
+            <p id="score"></p>
+            <p id="summary"></p>
+            <div id="detailed-results"></div>
+            <button class="navigation" onclick="startQuiz()">Realizar Otro Examen</button>
+        </div>
+    </div>
+
+    <script>
+        // !!! IMPORTANTE: POPULA ESTE ARRAY CON TUS PREGUNTAS EXTRAÍDAS !!!
+        const allQuestions = [
+            // --- De PREGUNTAS-ORDINARIA.pdf ---
+{
+    statement: "La rotación de puestos es una técnica adecuada para rediseñar un puesto cuando se pretende solventar los problemas derivados de un bajo nivel de especialización.",
+    answer: false,
+    explanation: "Es adecuada para solventar problemas de un alto nivel de especialización (ej. monotonía, aburrimiento)."
+},
+{
+    statement: "La presión de grupo que se produce al utilizar la técnica Delphi en la planificación de recursos humanos, puede hacer que las valoraciones realizadas por los expertos sean menos precisas de lo esperado.",
+    answer: false,
+    explanation: "La presión de grupo se produce en la técnica de grupo nominal. En la técnica Delphi pueden surgir problemas al integrar las opiniones de los expertos, pero no típicamente por presión de grupo directa."
+},
+{
+    statement: "La empresa DANONE está realizando una reestructuración interna de su plantilla porque, debido a algunas decisiones estratégicas realizadas, su oferta de recursos humanos es actualmente mayor que su demanda. Para realizar dicha reestructuración podría aplicar algunas medidas como una reducción de jornada laboral a un porcentaje de sus trabajadores y promover jubilaciones anticipadas.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "La previsión de la demanda de recursos humanos se puede realizar utilizando tanto métodos cuantitativos, como por ejemplo el análisis de tendencias, como métodos cualitativos, como el diagrama de dispersión.",
+    answer: false,
+    explanation: "El diagrama de dispersión es un método cuantitativo. Un ejemplo de método cualitativo sería la Técnica de grupo nominal o Delphi."
+},
+{
+    statement: "El reclutamiento es la práctica de gestión de recursos humanos que se ocupa de introducir a los nuevos trabajadores en la organización, explicarles los cometidos de sus puestos y presentarles a otras personas con las que van a trabajar.",
+    answer: false,
+    explanation: "Esta descripción corresponde a la socialización u onboarding. El reclutamiento se encarga de la búsqueda y atracción de candidatos."
+},
+{
+    statement: "El employer branding es el proceso por el cual las empresas buscan e identifican los posibles candidatos para cubrir sus necesidades internas de empleo o de mano de obra mediante las redes sociales.",
+    answer: false,
+    explanation: "El employer branding se centra en potenciar la marca de buen empleador para atraer candidatos. La identificación y búsqueda es parte del reclutamiento en general."
+},
+{
+    statement: "El reclutamiento externo mal gestionado produce endogamia en la organización.",
+    answer: false,
+    explanation: "La endogamia (falta de 'sangre nueva' o nuevas perspectivas) se produce más comúnmente por un reclutamiento interno excesivo o mal gestionado."
+},
+{
+    statement: "Los tests psicotécnicos son medidas objetivas y estandarizadas que analizan determinadas capacidades (por ejemplo, verbales, de razonamiento, entre otras) o aptitudes y personalidad de los candidatos (extroversión, honradez, entre otras).",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "La socialización formal se desarrolla fundamentalmente a través de los compañeros de trabajo.",
+    answer: false,
+    explanation: "La socialización formal es planificada y dirigida por la empresa (ej. manuales, cursos). La socialización informal ocurre a través de los compañeros."
+},
+{
+    statement: "Una técnica de selección es fiable si los resultados obtenidos al aplicarla son consistentes en el tiempo y entre entrevistadores.",
+    answer: true,
+    explanation: "La fiabilidad implica consistencia independientemente de quién y cuándo se aplique."
+},
+{
+    statement: "Mientras que la formación está más orientada a preparar al trabajador para el futuro, el desarrollo se centra en las necesidades formativas actuales de los individuos de la organización.",
+    answer: false,
+    explanation: "Es al revés: la formación se centra en necesidades actuales para el puesto actual, y el desarrollo está más orientado a preparar al trabajador para el futuro y roles potenciales."
+},
+{
+    statement: "El mentor es un profesional experimentado de la organización que guía a otro empleado con especial talento.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "La carrera profesional recoge la sucesión de actividades laborales y puestos de trabajo desempeñados por una persona dentro de una misma empresa.",
+    answer: false,
+    explanation: "La carrera profesional se refiere a la sucesión de actividades y puestos a lo largo de la vida laboral de una persona, no necesariamente dentro de una misma empresa."
+},
+{
+    statement: "El desarrollo de una marca personal adecuada permite a las empresas incrementar su capacidad para atraer y retener a trabajadores altamente cualificados.",
+    answer: false,
+    explanation: "Esto describe el 'employer branding' (marca de empleador). El desarrollo de la marca personal (personal branding) ayuda al individuo a aumentar su visibilidad y posición negociadora."
+},
+{
+    statement: "La suspensión del contrato de trabajo, como puede ser una jubilación o una dimisión, se produce cuando se interrumpe temporalmente la prestación laboral entre el trabajador y la empresa y las obligaciones entre ambas partes.",
+    answer: false,
+    explanation: "La jubilación y la dimisión son ejemplos de ruptura laboral voluntaria (extinción del contrato), no de suspensión. La excedencia es un ejemplo de suspensión laboral."
+},
+{
+    statement: "A la hora de evaluar el rendimiento, el efecto halo se produce cuando el evaluador quiere evitar problemas con los evaluados y tiende a calificar de forma indulgente, dando una mayor calificación de la que realmente debería obtener ese trabajador por la labor que ha realizado.",
+    answer: false,
+    explanation: "Eso es un error de lenidad. El efecto halo es generalizar una característica positiva (o negativa) a todos los aspectos de la evaluación del empleado."
+},
+{
+    statement: "Los criterios subjetivos de evaluación del rendimiento valoran los comportamientos, actitudes y capacidades de los trabajadores en el desempeño de su labor.",
+    answer: true,
+    explanation: "Los criterios objetivos se basan en resultados medibles, mientras que los subjetivos valoran aspectos como comportamientos y actitudes."
+},
+{
+    statement: "La flexibilidad laboral, las prestaciones sociales y el clima laboral se consideran tipos de retribución no financiera.",
+    answer: false,
+    explanation: "Las prestaciones sociales son un tipo de retribución financiera indirecta. La flexibilidad laboral y el clima laboral sí son retribución no financiera (o salario emocional)."
+},
+{
+    statement: "Existe equidad individual retributiva si dos individuos que ocupan un puesto similar pero que no contribuyen de forma similar a la organización, no reciben la misma retribución.",
+    answer: true,
+    explanation: "La equidad individual reconoce que, incluso en puestos similares, las diferencias en rendimiento o contribución pueden justificar diferencias en la retribución (ej. a través de bonos o incentivos)."
+},
+{
+    statement: "La diversidad en el lugar de trabajo no tiene ningún impacto en la productividad de la empresa.",
+    answer: false,
+    explanation: "La diversidad, bien gestionada, puede tener un impacto positivo en la productividad, la innovación y la atracción de talento."
+},
+{
+    statement: "La motivación de los empleados es una función importante de la gestión de recursos humanos.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "El liderazgo transformacional se enfoca en motivar y empoderar a los empleados para que alcancen su máximo potencial.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "El acoso en el lugar de trabajo es un problema menor y no necesita ser abordado con seriedad.",
+    answer: false,
+    explanation: "El acoso laboral es un problema grave que requiere atención y solución inmediata por parte de la empresa."
+},
+{
+    statement: "El reclutamiento es un proceso único y no hay necesidad de revisar o mejorar constantemente las prácticas de reclutamiento de una empresa.",
+    answer: false,
+    explanation: "El reclutamiento es un proceso dinámico y continuo que debe ser revisado y mejorado constantemente para asegurar su efectividad."
+},
+{
+    statement: "Los beneficios laborales, como los seguros de salud y los planes de retiro, no son importantes para los empleados.",
+    answer: false,
+    explanation: "Los beneficios laborales (retribución indirecta) son muy importantes para los empleados y contribuyen a su motivación y retención."
+},
+{
+    statement: "La retroalimentación positiva es la única forma efectiva de motivar a los empleados.",
+    answer: false,
+    explanation: "La retroalimentación positiva es importante, pero no la única forma. También se pueden usar metas desafiantes, recompensas, oportunidades de mejora y retroalimentación constructiva."
+},
+{
+    statement: "La evaluación del desempeño es una herramienta importante para identificar fortalezas y debilidades de los empleados.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "Las empresas deben enfocarse en la contratación de empleados con habilidades técnicas y no preocuparse por la personalidad o habilidades sociales.",
+    answer: false,
+    explanation: "Tanto las habilidades técnicas como las habilidades sociales (personalidad, trabajo en equipo, comunicación) son cruciales para el éxito en el trabajo."
+},
+{
+    statement: "La capacitación y el desarrollo de los empleados no son importantes si un empleado tiene las habilidades técnicas necesarias para el trabajo.",
+    answer: false,
+    explanation: "La capacitación y el desarrollo son importantes para todos los empleados para su crecimiento profesional a largo plazo y para adaptarse a los cambios."
+},
+{
+    statement: "La delegación de poder (empowerment): Motiva a los empleados a ser creativos y asumir riesgos, ya que da la oportunidad a los trabajadores de tomar decisiones que tradicionalmente serían tomadas por los directivos.",
+    answer: true,
+    explanation: ""
+},
+
+// --- De PREGUNTAS-VF.pdf (TEMA 1) ---
+{
+    statement: "La posición competitiva de la organización: es un factor organizativo que influye en la gestión de los RRHH de una empresa.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "El ajuste persona-organización es un factor q influye en la gestión de RRHH y es un factor: Individual.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "Uno de los retos de las empresas actuales es: Hacer un buen análisis de la inversión que se necesita realizar en personal pero teniendo en cuenta aspectos cuantitativos y la motivación y satisfacción de las personas.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "Las personas son un recurso estratégico.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "Actualmente las empresas consideran que los recursos humanos solo actúan ante los estímulos económicos.",
+    answer: false,
+    explanation: "Influyen más factores además de los económicos, como la motivación, el desarrollo, el ambiente laboral, etc."
+},
+{
+    statement: "La función de personal es una función de integración, coordinación y de apoyo.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "Los RRHH de una empresa son exclusivamente las personas que pertenecen al departamento de RRHH.",
+    answer: false,
+    explanation: "Los RRHH abarcan a todos los empleados de una empresa, en todos sus niveles jerárquicos."
+},
+{
+    statement: "Los RRHH son exclusivamente las personas que ocupan el último nivel de la cadena de mando de una organización.",
+    answer: false,
+    explanation: "Los RRHH incluyen a todos los empleados de la organización, no solo a los de un nivel específico."
+},
+{
+    statement: "Los RRHH son todas las personas q pertenecen a una organización, salvo las que ocupan un puesto directivo.",
+    answer: false,
+    explanation: "Los RRHH incluyen a todas las personas que pertenecen a la organización, incluyendo los puestos directivos."
+},
+{
+    statement: "La reestructuración organizativa supone una reducción de los niveles jerárquicos.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "La reestructuración organizativa supone una reducción del tamaño empresarial.",
+    answer: true,
+    explanation: "A menudo, la reestructuración puede llevar a una reducción del tamaño empresarial (downsizing), aunque no es el único resultado posible."
+},
+{
+    statement: "Para conseguir estructuras más planas en ningún caso se realizaran cambios en el diseño de trabajo.",
+    answer: false,
+    explanation: "Para conseguir estructuras más planas, frecuentemente se realizan cambios en el diseño de trabajo, como la ampliación o enriquecimiento de puestos."
+},
+{
+    statement: "La reestructuración organizativa requiere, para realizar una buena gestión de RRHH, examinar las necesidades de personal, los flujos de trabajo, los canales de comunicación y las necesidades de formación.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "La flexibilidad empresarial se puede lograr, entre otras formas mediante la centralización, la subcontratación y el uso de nuevas tecnologías.",
+    answer: false,
+    explanation: "La flexibilidad empresarial se logra más comúnmente mediante la descentralización, subcontratación y el uso de nuevas tecnologías. La centralización suele implicar menos flexibilidad."
+},
+{
+    statement: "La descentralización, la subcontratación y el uso de nuevas tecnologías tienen un efecto directo sobre las practicas de RRHH.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "La flexibilidad empresarial se puede lograr con la descentralización, la subcontratación o el uso de nuevas tecnologías.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "La descentralización tiene un efecto directo sobre las practicas de RRHH pero la subcontratación y el uso de nuevas tecnologías no.",
+    answer: false,
+    explanation: "Tanto la descentralización, como la subcontratación y el uso de nuevas tecnologías tienen efectos directos sobre las prácticas de RRHH."
+},
+{
+    statement: "Actualmente el director de RRHH se encarga solo de los aspectos relativos al coste de personal y a la legislación q afecta a los RRHH q hay en la misma.",
+    answer: false,
+    explanation: "El director de RRHH actual tiene un rol mucho más amplio y estratégico, que incluye aspectos humanos, de desarrollo, cultura, etc., además del coste y la legislación."
+},
+{
+    statement: "Actualmente el director de RRHH es un gestor q pone su atención en las personas.",
+    answer: false, // Según el PDF, la corrección dice "Falso. Los directores de RRHH se encargan de diseñar las estrategias, políticas y practicas de gestión y los responsables funcionales se encargan de poner en marcha estas estrategias y políticas y son el elemento de enlace con el personal de la organización."
+    explanation: "Si bien pone atención en las personas, su rol principal es diseñar estrategias, políticas y prácticas de gestión, y los responsables funcionales las implementan. Es un rol más estratégico y de diseño que solo 'poner atención'."
+},
+{
+    statement: "Entre las tendencias de la gestión de RRHH se encuentran: la gestión de la diversidad, la gestión del talento y el personal branding.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "Los objetivos explícitos de la gestión de RRHH son: atraer a candidatos adecuados, calificados..., retener a los mejores empleados, motivar a los empleados y ayudarles a desarrollarse.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "Los objetivos implícitos están integrados en la filosofía o cultura empresarial y son mejorar la productividad de las personas, mejorar la calidad de vida en el trabajo y el cumplimiento d ela normativa.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "Los objetivos a largo plazo son los q presentan el alcance estratégico de la gestión de los RRHH y son la rentabilidad y competitividad, incremento de valor en la empresa y la mejora de la eficiencia y eficacia de la organización.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "El departamento de RRHH no es igual de importante y complejo en todas las organizaciones pero existe en todas las organizaciones.",
+    answer: false, // El PDF lo marca como F, y luego dice que "El departamento de RRHH es igual de importante y complejo en todas las organizaciones. F" (doble F). Implica que la primera afirmación es verdadera.
+    explanation: "El departamento de RRHH existe en la mayoría de las organizaciones, pero su importancia y complejidad pueden variar significativamente según el tamaño y tipo de organización."
+}, // Esta pregunta del PDF es un poco confusa en su corrección. Interpreto que la primera parte es la verdadera.
+{
+    statement: "Entre las cualidades q debería tener un director de RRHH está el tener un liderazgo competente es decir, disponer de credibilidad, conocimiento y poder de influencia.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "Los objetivos implícitos son los que presentan el alcance estratégico de la gestión de los RRHH.",
+    answer: false,
+    explanation: "Son los objetivos a largo plazo los que presentan el alcance estratégico."
+},
+{
+    statement: "La gestión de la diversidad es una estrategia integral basada en crear una plantilla diversa de empleados, con el objetivo de atraer, retener y potenciar a personas de diferentes perfiles.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "En la gestión del talento en la fase de desarrollo se incluye coaching, mentoring y eventos de visibilidad y networking.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "El objetivo principal de la gestión de RRHH consiste en la planificación, organización, desarrollo y control de una serie de técnicas.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "Los procesos de afectación la organización los lleva a cabo para buscar e incorporar las personas mas adecuadas para cada puesto. Se incluyen el reclutamiento, la selección y la socialización.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "El employer branding es una marca q define como buen empleador y les permita atraer y retener a los mejores profesionales.",
+    answer: true,
+    explanation: ""
+},
+
+// --- De PREGUNTAS-VF.pdf (TEMA 2) ---
+{
+    statement: "La especificación o perfil del puesto recoge la información relativa a cada puesto con relación a las competencias del trabajador.",
+    answer: true, // Aunque la descripción es más de la "descripción del puesto", las competencias son parte del perfil.
+    explanation: ""
+},
+{
+    statement: "La descripción del puesto se define como el documento q recoge la información relativa a cada puesto con relación a las tareas, obligaciones, responsabilidades y condiciones laborales.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "La reingeniería es la reconsideración fundamental y el rediseño radical de los procesos de la empresa para logar mejoras trascendentales en las medidas básicas del desempeño, el coste, la calidad, el servicio y la rapidez. Se hace en torno a rdos y afecta a la descripción de puestos de trabajo.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "El análisis de puestos de trabajo es el proceso a través del cual la empresa recopila y analiza la información sobre el puesto de trabajo con la intención de identificar las tareas, obligaciones y responsabilidades del puesto.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "Entre las técnicas utilizadas para realizar el rediseño de puestos se encuentran la simplificación del puesto, la ampliación del puesto y el enriquecimiento del puesto.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "En la fase análisis de puestos de trabajo, entre otras cosas, se trata de determinar que puestos de trabajo se van a analizar y de reunir datos sobre las actividades laborales necesarias.",
+    answer: true,
+    explanation: ""
+}
+
+// Continúa añadiendo más preguntas de PREGUNTAS-VF.pdf (Temas 3, 4, 5, 6, 7, 8, 9, 10)
+// Ejemplo de Tema 3 y 10
+// (Asumo que las preguntas de TEMA 3 Y 10: LA PLANIFICACIÓN DE LOS RRHH Y LOS PROCESOS SUSTRACTIVOS también siguen el formato V/F)
+,{
+    statement: "En la planificación de RRHH se analiza si la plantilla de la empresa es suficiente y si hay que iniciar procesos de reclutamiento y selección.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "La alta tasa de paro en un país hace que aumente la oferta de personal.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "El coste de un programa de outplacement o recolocación se descuenta de la indemnización de despido del empleado.",
+    answer: false,
+    explanation: "La empresa se hace cargo íntegramente del coste del programa de outplacement."
+},
+{
+    statement: "Un programa de outplacement o recolocación tiene como objetivo minimizar las demandas judiciales que puedan interponer los trabajadores despedidos.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "La planificación de RRHH es un proceso mas completo y complejo que la planificación de plantillas.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "El programa de outplacement o recolocación es un programa creado para ayudar a los empleados despedidos a superar el estrés emocional del mismo y a ayudarle a buscar nuevo empleo.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "La ruptura laboral voluntaria es: dimisión y despidos.",
+    answer: false,
+    explanation: "La dimisión es voluntaria, pero los despidos son ruptura laboral involuntaria. La ruptura voluntaria incluye dimisión, jubilación voluntaria, etc."
+},
+{
+    statement: "Los despidos son ruptura laboral involuntaria.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "Incentivar a los empleados a que voluntariamente tomen excedencias es una alternativa a la reducción de plantillas.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "Las auditorias de RRHH ofrecen un resumen de las habilidades y conocimientos de los empleados de la empresa.",
+    answer: true,
+    explanation: ""
+},// --- Continuación de PREGUNTAS-VF.pdf (TEMA 4 Y 5: RECLUTAMIENTO Y SELECCIÓN Y SOCIALIZACIÓN) ---
+{
+    statement: "La socialización tiene un sentido predominantemente objetivo, ya que el proceso no se desarrolla en el individuo sino en la empresa.",
+    answer: false,
+    explanation: "La socialización es un proceso que afecta y se desarrolla en el individuo, aunque la empresa lo planifique (socialización formal)."
+},
+{
+    statement: "La socialización puede ser formal, es decir orientada por la dirección.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "Entre los diferentes métodos de orientación destacan: las charlas divulgativas, las visitas a las instalaciones y la entrega de manuales.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "Aprovechar las inversiones de formación realizadas por otras empresas es una ventaja del reclutamiento externo.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "El reclutamiento externo consiste en la búsqueda de candidatos potenciales o reales empleados en otras empresas.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "El reclutamiento interno es cuando la empresa busca dentro de su misma empresa los candidatos para un puesto de trabajo.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "Los candidatos propuestos por los empleados son una fuente de reclutamiento interno.",
+    answer: true, // El PDF lo marca como Verdadero. Se considera una fuente híbrida o a veces interna.
+    explanation: "Generalmente se considera una fuente de reclutamiento interno o híbrida, ya que el empleado actual hace la recomendación."
+},
+{
+    statement: "La selección es un proceso básico de la gestión de RRHH.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "La selección es el conjunto de técnicas que van a permitir encontrar las personas más adecuadas para desempeñar un puesto de trabajo.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "La selección es anterior al reclutamiento.",
+    answer: false,
+    explanation: "El orden es: reclutamiento (atraer candidatos), luego selección (elegir al más adecuado) y finalmente socialización."
+},
+{
+    statement: "En el proceso de selección las herramientas tienen que ser válidas y fiables.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "En el proceso de selección las pruebas de selección evalúan factores como aptitudes, personalidad, habilidades y motivación de los empleados potenciales.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "La validez se refiere a la consistencia de la medida, normalmente a lo largo del tiempo pero también entre entrevistadores distintos.",
+    answer: false,
+    explanation: "Esta definición corresponde a la fiabilidad. La validez se refiere a si la técnica mide realmente lo que pretende medir."
+},
+{
+    statement: "Para realizar un buen proceso de selección hay que elegir las técnicas y herramientas mas adecuadas en cada caso.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "El reclutamiento 3.0 se refiere al proceso clásico de reclutamiento que se realiza en las empresas.",
+    answer: false,
+    explanation: "El reclutamiento 3.0 (o 4.0) se refiere al uso de tecnologías, redes sociales, IA, etc., en el proceso de reclutamiento, es más moderno."
+},
+{
+    statement: "Entre las ventajas que tienen las redes sociales para hacer reclutamiento está el menor coste que tienen respecto al reclutamiento tradicional.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "Entre las ventajas que tienen las redes sociales está la posibilidad de crear mala reputación para la empresa.",
+    answer: false,
+    explanation: "Crear mala reputación es un inconveniente o riesgo del uso de redes sociales, no una ventaja."
+},
+{
+    statement: "Los avances tecnológicos todavía no han permitido automatizar partes de la fase de reclutamiento.",
+    answer: false,
+    explanation: "Los avances tecnológicos sí han permitido automatizar muchas partes del reclutamiento (ej. cribado de CVs, chatbots, etc.)."
+},
+{
+    statement: "La preselección es la primera etapa del proceso de selección.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "En la selección secuencial con tres o más actos de decisión, se realizan al menos tres pruebas de selección de forma secuencial.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "En la entrevista de contratación se explica la oferta de trabajo que el candidato elegido podrá aceptar o rechazar.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "Los impresos de biodatos son una versión detallada de la solicitud en la que los candidatos contestan a una serie de preguntas sobre su salud.",
+    answer: false,
+    explanation: "Los impresos de biodatos recogen información biográfica y experiencias pasadas para predecir el comportamiento futuro, no se centran en la salud."
+},
+{
+    statement: "Los juegos de empresas y assesment centres son técnicas de selección.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "Las agencias públicas de empleo son un método de reclutamiento externo.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "El inventario de habilidades y las listas de ascensos son herramientas para hacer reclutamiento externo.",
+    answer: false,
+    explanation: "Son herramientas para el reclutamiento interno."
+},
+{
+    statement: "Entre las fuentes de reclutamiento interno se encuentra las empresas de trabajo temporal.",
+    answer: false,
+    explanation: "Las empresas de trabajo temporal (ETT) son una fuente de reclutamiento externo."
+},
+{
+    statement: "Entre las fuentes de reclutamiento interno se encuentra el reclutamiento por internet.",
+    answer: false, // El PDF lo marca como Falso. El reclutamiento por internet puede ser tanto para fuentes internas (portal del empleado) como externas (portales de empleo, redes).
+    explanation: "El reclutamiento por internet es un método que se puede usar tanto para fuentes internas (ej. intranet, portal del empleado) como externas (ej. portales de empleo, LinkedIn)."
+},
+{
+    statement: "Entre las ventajas del reclutamiento externo se encuentra que atrae personal con nuevas ideas y formas de abordar los problemas organizativos.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "Entre las ventajas del reclutamiento externo se encuentra que refuerza la motivación y compromiso de los empleados.",
+    answer: false,
+    explanation: "Esto es más característico de las ventajas del reclutamiento interno (promociones)."
+},
+{
+    statement: "Entre las ventajas del reclutamiento externo se encuentra que el candidato ya posee conocimientos sobre la empresa y ésta sobre él.",
+    answer: false,
+    explanation: "Esto es una ventaja del reclutamiento interno, ya que se conoce al candidato."
+},
+{
+    statement: "Entre las ventajas del reclutamiento externo se encuentra que aprovecha las inversiones realizadas por la propia empresa en formación.",
+    answer: false,
+    explanation: "Esto sería aprovechar inversiones de formación de OTRAS empresas. Aprovechar la formación propia es una ventaja del reclutamiento interno."
+},
+
+// --- Continuación de PREGUNTAS-VF.pdf (TEMA 6 Y 7: Formación y gestión de la carrera profesional) ---
+{
+    statement: "Cuando para evaluar un programa de formación se analiza el impacto quiere decir que se analizan los efectos de la formación en la empresa, en cuanto a productividad, beneficios y desarrollo de la organización.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "El coaching es una herramienta que ayuda a potenciar el desarrollo de las personas mediante un proceso de reflexión para identificar, incorporar o desarrollar nuevas habilidades y competencias, y también favorece el desarrollo de acciones para lograr un mejor desempeño actual y futuro.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "El alcance de la formación es el grupo o la organización.",
+    answer: false,
+    explanation: "El alcance de la formación es individual. Cuando se enfoca en el grupo o la organización, se habla más de desarrollo organizacional o de equipos."
+},
+{
+    statement: "El método 70-20-10 se basa en tres fuentes de información: aprendizaje experimental, interacción social y aprendizaje formal.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "La marca personal está compuesta por la sucesión de actividades laborales y puestos de trabajo desempeñados por una persona a lo largo de su vida, así como por las diferentes decisiones que ha tomado y las experiencias profesionales que ha tenido en el desempeño de esas tareas y puestos de trabajo.",
+    answer: false, // El PDF indica que es Falso, y que esa definición corresponde a Carrera Profesional.
+    explanation: "Esta definición corresponde a la carrera profesional. La marca personal es la percepción que otros tienen de uno, basada en sus habilidades, experiencia y valores."
+},
+{
+    statement: "Las fases del programa de formación son: identificación de las necesidades, diseño y evaluación.",
+    answer: false,
+    explanation: "Las fases suelen ser 4: identificación de necesidades, diseño, implantación y evaluación."
+},
+{
+    statement: "Uno de los beneficios indirectos de la formación es que incide de forma positiva en variables de recursos humanos como el compromiso y los niveles de rotación o absentismo.",
+    answer: false,
+    explanation: "Estos son beneficios directos o resultados esperados de la formación (mejor compromiso, menor rotación)."
+},
+{
+    statement: "La empleabilidad es una nueva habilidad de dirección que consiste en establecer unas redes de contacto profesional que permitan al empleado conocerse mejor a sí mismo y al negocio, escuchando y aprendiendo de otros.",
+    answer: false, // El PDF indica que esta definición es de Networking.
+    explanation: "Esta definición corresponde más al 'networking'. La empleabilidad es la capacidad de una persona para conseguir o mantener un empleo."
+},
+{
+    statement: "En la fase de premisas de la gestión de la carrera profesional se identifican las fortalezas y debilidades del empleado.",
+    answer: false,
+    explanation: "Esto ocurre en la fase de valoración o autoevaluación dentro de la gestión de la carrera."
+},
+
+// --- Continuación de PREGUNTAS-VF.pdf (TEMA 8: Evaluación y gestión del rendimiento - El PDF lo llama TEMA 8, pero en los apuntes era TEMA 7) ---
+{
+    statement: "La evaluación del rendimiento es un proceso formal y sistemático.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "La finalidad de la evaluación es ver si el trabajador es productivo y si podrá mejorar su rendimiento en el futuro.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "Los fines de la evaluación del rendimiento no son solo evaluar lo que no se hace bien, sino buscar la manera de mejorarlo.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "La evaluación del rendimiento es un proceso de 4 etapas.",
+    answer: false,
+    explanation: "Suele considerarse un proceso de 3 etapas principales: Delimitación, Evaluación propiamente dicha, y Gestión y Mejora del rendimiento."
+},
+{
+    statement: "Lo más habitual es que sea el departamento de RRHH el encargado de realizar las evaluaciones a los empleados.",
+    answer: true, // El PDF lo marca como Verdadero, aunque en la práctica el supervisor directo es el principal evaluador, RRHH diseña el sistema.
+    explanation: "El departamento de RRHH suele ser el encargado de diseñar e implementar el sistema de evaluación, aunque la evaluación en sí la realiza a menudo el superior directo."
+},
+{
+    statement: "La evaluación 360º es la evaluación a través de todos los medios.",
+    answer: true, // Refiriéndose a múltiples fuentes de feedback (pares, subordinados, clientes, etc.)
+    explanation: "La evaluación 360º implica recibir feedback de múltiples fuentes (superiores, pares, subordinados, clientes, autoevaluación)."
+},
+{
+    statement: "Existen dos criterios de evaluación: criterios objetivos y subjetivos.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "La practicidad en las características que deberían cumplir los criterios de evaluación significa que tienen que ser medibles y si es posible, cuantitativos.",
+    answer: true, // El PDF lo marca como Verdadero.
+    explanation: "La practicidad se refiere a que sean fáciles de usar y entender. Que sean medibles y cuantitativos se relaciona más con la objetividad y la validez."
+},
+{
+    statement: "El método de categorización se basa en criterios absolutos y permiten evaluar al trabajador a través de factores que pueden ser mas o menos aplicables.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "El método narrativo analiza la actuación o comportamiento de los empleados en el puesto de trabajo para detectar sus fortalezas, debilidades éxitos y fracasos. Permiten obtener una evaluación cualitativa.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "Los métodos con base en el desempeño pasado son: medidas de productividad e historial de logros.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "El método con base al desempeño futuro es la dirección o administración por objetivos.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "El método con base al desempeño futuro es la dirección o administración por objetivos puede dar una perspectiva distorsionada del rendimiento. No se tienen en cuenta cuestiones como la calidad o el servicio.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "En el método objetivo o de resultados, la jerarquización tiene base en el pasado y el evaluador clasifica a los empleados a través de una escala de preferencias.",
+    answer: true, // La jerarquización (ranking) es un método comparativo.
+    explanation: ""
+},
+{
+    statement: "El objetivo de la distribución forzosa es establecer diferentes grados de rendimiento entre empleados.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "Las listas de verificación o listas de revisión de conductas es útil como método complementario y permite obtener una información mas general y simple que los métodos cuantitativos.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "Las formas narrativas o ensayos narrativos tienen base en el pasado.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "Las formas narrativas o ensayos narrativos tienen base en el pasado permiten detectar características especificas de cada empleado, pero es demasiado subjetivo. Es útil como complemento a otros métodos.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "Los incidentes críticos tienen base en el pasado y prestan especial atención al comportamiento.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "Los criterios de evaluación o assessment center son costosos en términos de tiempo y dinero, pero son muy adecuados para niveles directivos.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "El efecto halo y eco es un error q se produce cuando el evaluador generaliza una característica especifica del evaluado a todos los aspectos de la evaluación de desempeño, dando un resultado superior o inferior al que merece el empleado.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "El error de lenidad el evaluador quiere evitar problemas con los evaluados y lo que hace es calificar de forma indulgente dando, en general, una calificación mas alta.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "Error de severidad se tiende a calificar de forma desfavorable por falta de experiencia del evaluador, desconocimiento de los factores de evaluación o para lograr impresionar a los superiores.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "El etnocentrismo es la tendencia a considerar que los valores propios son siempres los mas deseables.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "En la gestión y mejora del rendimiento hay que identificar las causas de los problemas de rendimiento y tomar medidas para resolverlos, formular estrategias y planes de acción.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "En la gestión y mejora del una vez identificadas la causaas se definen las estrategias disponibles y se establecen los planes de actuación para resolver el problema.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "Se proponen tres tipos de estrategias en En la gestión y mejora del rendimiento: estrategias de reforzamiento positivo, negativo y estrategias en caso de q las anteriores no funcionen.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "En el tipo de entrevista mixta se combina las de hablar y convencer con la solución de problemas, forma que la primera sirva para la evaluación y la segunda para la mejora.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "La retroalimentación o feedback permanente busca personalizar la evaluación y orientar el desarrollo de las capacidades hacia el logro de los objetivos.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "Los procesos sustractivos solamente afectan a los procesos de evaluación y compensación ya que se trata de una etapa final en el proceso de gestión de RRHH.",
+    answer: false,
+    explanation: "Los procesos sustractivos (desvinculación) afectan a todo el sistema de RRHH (planificación, moral, etc.), no solo a evaluación y compensación como etapa final."
+},
+{
+    statement: "Los tipos de procesos sustractivos con los que nos podemos encontrar son la desvinculación voluntaria o involuntaria del trabajador.",
+    answer: false, // El PDF lo marca como Falso, indicando que son "temporales o permanentes".
+    explanation: "Si bien la desvinculación puede ser voluntaria o involuntaria, los tipos de procesos sustractivos se pueden clasificar más bien por su naturaleza (temporal como excedencia, o permanente como despido/jubilación)."
+},
+{
+    statement: "Un indicador de la ruptura laboral existente en una empresa es la tasa o índice de rotación laboral.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "Con la excedencia (supresión laboral) existe una desvinculación temporal del trabajador con la empresa, lo cual lleva a la extinción del contrato del trabajo.",
+    answer: false,
+    explanation: "La excedencia implica una suspensión del contrato, no su extinción. La 'supresión laboral' podría llevar a la extinción, pero la excedencia por sí misma es temporal."
+},
+{
+    statement: "Los sistemas de outplacement mezclan el coaching con la recolocación de los empleados en el mercado.",
+    answer: false, // El PDF lo corrige a "coachplacement".
+    explanation: "Esto se describe mejor como 'coachplacement' o servicios de outplacement que incluyen coaching y apoyo para la recolocación."
+},
+{
+    statement: "La evaluación del rendimiento no tiene ninguna relación con el sistema de retribución de la empresa.",
+    answer: false,
+    explanation: "La evaluación del rendimiento suele tener una relación directa o indirecta con el sistema de retribución (ej. bonos por desempeño, aumentos salariales, promociones)."
+},
+
+// --- Continuación de PREGUNTAS-VF.pdf (TEMA 9: LA RETRIBUCIÓN EN LA EMPRESA - El PDF lo llama TEMA 9, pero en los apuntes era TEMA 8) ---
+{
+    statement: "Las empresas piensan que el principal motivante del trabajador es el dinero.",
+    answer: false,
+    explanation: "Si bien el dinero es un motivador importante, no es el único. También influyen el aprendizaje, desarrollo, reconocimiento, ambiente, etc."
+},
+{
+    statement: "La retribución o compensación total es el conjunto de percepciones financieras, servicios o beneficios tangibles que recibe el empleado como consecuencia de su actividad en la organización.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "El dinero es extrínseco y las otras compensaciones motivantes son intrínsecas.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "La retribución no financiera (factores intrínsecos) se basa en 3 elementos fundamentales: autonomía, ambiente de trabajo y flexibilidad.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "La retribución financiera indirecta mediante prestaciones no suelen pagarse de forma directa al empleado y se perciben por el hecho de formar parte de la organización.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "La retribución financiera directa puede fija o variable.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "Las dietas no son prestaciones ni salarios, son simplemente un gasto empresarial.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "La equidad o consistencia interna se refiere al logro de una retribución justa haciendo que los individuos que estan en el mismo nivel o que tiene contribuciones similares para la organización reciban la misma retribución.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "La equidad o competitividad externa se refiere a la consideración de que la retribución es justa respecto a lo que se percibe en puestos similares en otras empresas.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "En la equidad individual se cobra distinto por resultados distintos individualmente.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "La política salarial es el conjunto de principios y directrices que reflejan la orientación y filosofía de la organización respecto al sistema de retribución.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "La horquilla salarial diferencia monetariamente entre el que mas gana dentro de la empresa y el que menos.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "Para determinar el salario base de cada puesto se pueden utilizar dos sistemas de retribución: la retribución basada en el puesto de trabajo y los sistemas de retribución basados en competencias o habilidades, y para determinar los incentivos, el sistema de retribución es aquel que esta basado en el rendimiento.",
+    answer: true,
+    explanation: ""
+},
+
+// --- PREGUNTAS DE TODO EL TEMARIO (EXAMEN FINAL) - del final de PREGUNTAS-VF.pdf ---
+{
+    statement: "La retribución basada en competencias es un sistema donde se paga por el valor que se atribuye a los deberes, responsabilidades, tareas y otros factores relacionados con el trabajo y las condiciones laborales.",
+    answer: false,
+    explanation: "Cuando la retribución se basa en competencias, se paga en función de las aptitudes, conocimientos, habilidades y capacidades del trabajador, no del valor del puesto en sí."
+},
+{
+    statement: "Las entrevistas de trabajo son una de las fuentes de recopilación de información que se pueden utilizar para realizar un análisis de puestos de trabajo.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "Los problemas asociados a la baja especialización en los puestos de trabajo pueden solventarse mediante la ampliación o el enriquecimiento de tareas de los mismos.",
+    answer: false,
+    explanation: "La ampliación y el enriquecimiento de tareas son técnicas para solventar problemas de alta especialización (monotonía). Para la baja especialización (demasiadas tareas o muy complejas) se podría simplificar o dividir el trabajo."
+},
+{
+    statement: "El área de recursos humanos debe tener muy en cuenta los cambios tecnológicos que ocurren en el entorno ya que pueden afectar a la planificación de plantillas a corto y largo plazo.",
+    answer: true,
+    explanation: ""
+},
+{
+    statement: "El reclutamiento externo mal gestionado puede producir endogamia en la organización.",
+    answer: false,
+    explanation: "La endogamia se produce más comúnmente por un reclutamiento interno excesivo o mal gestionado."
+}
+        ];
+
+        let currentQuizQuestions = [];
+        let currentQuestionIndex = 0;
+        let userAnswersRecord = []; // Almacenará el registro para los resultados finales
+        const questionsPerExam = 30;
+
+        const quizSetupDiv = document.getElementById('quiz-setup');
+        const quizAreaDiv = document.getElementById('quiz-area');
+        const resultsAreaDiv = document.getElementById('results-area');
+        const questionNumberP = document.getElementById('question-number');
+        const questionTextP = document.getElementById('question-text');
+        const feedbackAreaDiv = document.getElementById('feedback-area');
+        const feedbackTextP = document.getElementById('feedback-text');
+        const feedbackExplanationP = document.getElementById('feedback-explanation');
+        const nextButton = document.getElementById('next-question-button');
+        const trueButton = document.getElementById('true-button');
+        const falseButton = document.getElementById('false-button');
+
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function startQuiz() {
+            shuffleArray(allQuestions);
+            currentQuizQuestions = allQuestions.slice(0, Math.min(questionsPerExam, allQuestions.length));
+            currentQuestionIndex = 0;
+            userAnswersRecord = [];
+
+            quizSetupDiv.style.display = 'none';
+            resultsAreaDiv.style.display = 'none';
+            quizAreaDiv.style.display = 'block';
+            nextButton.style.display = 'none';
+            feedbackAreaDiv.style.display = 'none';
+            
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            feedbackAreaDiv.style.display = 'none'; // Ocultar feedback anterior
+            feedbackTextP.textContent = '';
+            feedbackExplanationP.textContent = '';
+            nextButton.style.display = 'none';
+            trueButton.disabled = false;
+            falseButton.disabled = false;
+
+            if (currentQuestionIndex < currentQuizQuestions.length) {
+                const question = currentQuizQuestions[currentQuestionIndex];
+                questionNumberP.textContent = `Pregunta ${currentQuestionIndex + 1} de ${currentQuizQuestions.length}`;
+                questionTextP.textContent = question.statement;
+            } else {
+                showResults();
+            }
+        }
+
+                function selectAnswer(userSelectedAnswer) {
+            trueButton.disabled = true;
+            falseButton.disabled = true;
+
+            const currentQuestion = currentQuizQuestions[currentQuestionIndex];
+            userAnswersRecord.push({ // Guardar para los resultados finales
+                statement: currentQuestion.statement,
+                userAnswer: userSelectedAnswer,
+                correctAnswer: currentQuestion.answer,
+                explanation: currentQuestion.explanation
+            });
+
+            feedbackAreaDiv.style.display = 'block';
+            feedbackExplanationP.textContent = ''; // Limpiar explicación previa
+
+            if (userSelectedAnswer === currentQuestion.answer) {
+                feedbackTextP.textContent = "¡Correcto!";
+                feedbackAreaDiv.className = 'feedback-area correct';
+            } else { // El usuario ha fallado
+                feedbackTextP.textContent = "Incorrecto.";
+                feedbackAreaDiv.className = 'feedback-area incorrect';
+            }
+
+            // --- NUEVA LÓGICA PARA MOSTRAR JUSTIFICACIÓN ---
+            // Si la RESPUESTA CORRECTA es FALSA y hay una explicación, mostrarla.
+            if (currentQuestion.answer === false && currentQuestion.explanation && currentQuestion.explanation.trim() !== "") {
+                feedbackExplanationP.textContent = `Justificación: ${currentQuestion.explanation}`;
+            } 
+            // Si el usuario falló Y la respuesta correcta era VERDADERA (y no hay justificación para mostrar de la condición anterior)
+            else if (userSelectedAnswer !== currentQuestion.answer && currentQuestion.answer === true) {
+                 feedbackExplanationP.textContent = `La respuesta correcta era: Verdadero.`;
+            }
+            // Si el usuario falló, la respuesta correcta era FALSA, PERO NO hay explicación en los datos
+            else if (userSelectedAnswer !== currentQuestion.answer && currentQuestion.answer === false && (!currentQuestion.explanation || currentQuestion.explanation.trim() === "")) {
+                feedbackExplanationP.textContent = `La respuesta correcta era: Falso. (No hay justificación detallada disponible).`;
+            }
+            // --- FIN DE NUEVA LÓGICA ---
+            
+            if (currentQuestionIndex < currentQuizQuestions.length - 1) {
+                nextButton.style.display = 'block';
+            } else {
+                nextButton.textContent = "Ver Resultados";
+                nextButton.onclick = showResults; 
+                nextButton.style.display = 'block';
+            }
+        }
+        
+        function nextQuestion() {
+            currentQuestionIndex++;
+            nextButton.textContent = "Siguiente Pregunta"; // Restaurar texto si se cambió
+            nextButton.onclick = nextQuestion; // Restaurar acción
+            loadQuestion();
+        }
+
+
+        function showResults() {
+            quizAreaDiv.style.display = 'none';
+            resultsAreaDiv.style.display = 'block';
+
+            let correctCount = 0;
+            let incorrectCount = 0;
+
+            const detailedResultsDiv = document.getElementById('detailed-results');
+            detailedResultsDiv.innerHTML = '<h3>Respuestas Detalladas:</h3>';
+
+            userAnswersRecord.forEach((ans, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.classList.add('result-item');
+                
+                let resultText = `<p><b>Pregunta ${index + 1}:</b> ${ans.statement}</p>`;
+                resultText += `<p>Tu respuesta: ${ans.userAnswer ? 'Verdadero' : 'Falso'}. `;
+                resultText += `Respuesta correcta: ${ans.correctAnswer ? 'Verdadero' : 'Falso'}.</p>`;
+
+                if (ans.userAnswer === ans.correctAnswer) {
+                    correctCount++;
+                    itemDiv.classList.add('correct');
+		    
+                } else {
+                    incorrectCount++;
+                    itemDiv.classList.add('incorrect');
+                    if (ans.explanation) {
+                        resultText += `<p class="explanation">Explicación: ${ans.explanation}</p>`;
+                    }
+                }
+                itemDiv.innerHTML = resultText;
+                detailedResultsDiv.appendChild(itemDiv);
+            });
+
+            const scoreValue = correctCount - (incorrectCount / 2);
+            const finalScore = Math.max(0, scoreValue).toFixed(2); 
+            const totalPossibleBaseScore = currentQuizQuestions.length;
+
+            document.getElementById('score').textContent = `Puntuación Final: ${finalScore} / ${totalPossibleBaseScore}`;
+            document.getElementById('summary').textContent = `Respuestas Correctas: ${correctCount}, Respuestas Incorrectas: ${incorrectCount}.`;
+        }
+
+    </script>
+</body>
+</html>
