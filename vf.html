@@ -6,93 +6,208 @@
     <title>Examen V/F - Dirección de RRHH</title>
     <style>
         body {
-            font-family: sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
             line-height: 1.6;
-            margin: 20px;
-            background-color: #f4f4f4;
-            color: #333;
-        }
-        .container {
-            max-width: 800px;
-            margin: auto;
-            background: #fff;
+            margin: 0;
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
-        h1, h2 {
+
+        #quiz-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            margin: 20px auto;
             text-align: center;
-            color: #333;
+            box-sizing: border-box;
         }
-        .question-area {
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px; /* Reducido margen */
+            font-size: 2em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+        h2 { /* Estilo para el título secundario */
+            color: #34495e;
+            font-size: 1.4em;
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+
+
+        .screen { /* Clase genérica para pantallas */
+            display: none; 
+            padding: 20px;
+        }
+
+        .screen.active {
+            display: block; 
+        }
+
+        #question-area-wrapper { /* Contenedor del área de pregunta original */
             margin-bottom: 20px;
-            padding: 15px;
-            background-color: #e9e9e9;
-            border-radius: 5px;
+            text-align: left;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: #fdfdfd;
         }
-        .question-text {
-            font-size: 1.1em;
-            margin-bottom: 15px;
+
+        #question-number-label {
+            font-size: 0.9em;
+            color: #555;
+            margin-bottom: 10px;
+            display: block;
         }
-        .options button {
-            padding: 10px 20px;
-            margin: 5px;
+
+        #question-text-label {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #34495e;
+            margin-bottom: 20px;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap; 
+        }
+
+        button, .option-button {
+            padding: 12px 25px; /* Aumentado padding para botones V/F */
+            font-size: 1em; 
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 1em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            min-width: 150px; 
         }
-        .options button.true {
+
+        button:hover:not(:disabled), .option-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        button:disabled, .option-button:disabled {
+            background-color: #cccccc !important; 
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        #start-button { /* Estilo para el botón de empezar */
+            background-color: #3498db;
+            color: white;
+            display: block;
+            margin: 20px auto;
+        }
+
+        #start-button:hover:not(:disabled) {
+            background-color: #2980b9;
+        }
+
+        /* Estilos para botones V/F del primer ejemplo */
+        .option-button.true-style {
             background-color: #4CAF50;
             color: white;
         }
-        .options button.false {
+        .option-button.true-style:hover:not(:disabled) {
+            background-color: #45a049;
+        }
+
+        .option-button.false-style {
             background-color: #f44336;
             color: white;
         }
-        .feedback-area {
+         .option-button.false-style:hover:not(:disabled) {
+            background-color: #da190b;
+        }
+
+
+        #next-question-button {
+            background-color: #f39c12; /* Naranja del segundo ejemplo */
+            color: white;
+            display: block; /* Para centrar si es el único en su grupo */
+            margin: 20px auto;
+        }
+
+        #next-question-button:hover:not(:disabled) {
+            background-color: #e67e22;
+        }
+
+        #restart-button { /* Botón para reiniciar el examen */
+            background-color: #95a5a6;
+            color: white;
+            display: block;
+            margin: 20px auto;
+        }
+
+        #restart-button:hover:not(:disabled) {
+            background-color: #7f8c8d;
+        }
+        
+        /* Feedback styles from the first example */
+        #feedback-message-area {
             margin-top: 15px;
             padding: 10px;
             border-radius: 5px;
             font-weight: bold;
+            text-align: left;
         }
-        .feedback-area.correct {
+        #feedback-message-area.correct {
             background-color: #d4edda;
             color: #155724;
             border: 1px solid #c3e6cb;
         }
-        .feedback-area.incorrect {
+        #feedback-message-area.incorrect {
             background-color: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
-        .feedback-area .explanation {
+        #feedback-message-area .explanation {
             font-style: italic;
             font-size: 0.9em;
             font-weight: normal;
             margin-top: 5px;
         }
-        .navigation button {
-            padding: 10px 20px;
-            margin-top: 20px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-        }
-        #start-button, #next-question-button {
-            display: block;
-            margin: 20px auto;
-        }
-        .results-area {
+
+
+        .final-results-wrapper { /* Contenedor para resultados finales */
             margin-top: 30px;
+            padding: 25px;
+            background-color: #eaf4fa;
+            border-radius: 10px;
+            border: 1px solid #3498db;
+            text-align: left;
         }
-        .results-area p {
+
+        .final-results-wrapper p {
             font-size: 1.2em;
-            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
         }
+        .final-results-wrapper h3 {
+            color: #2c3e50;
+            margin-top: 20px;
+            border-bottom: 1px solid #bdc3c7;
+            padding-bottom: 5px;
+        }
+
+        /* Detailed results styles from the first example */
         .result-item {
             padding: 10px;
             margin-bottom: 10px;
@@ -110,51 +225,72 @@
             margin: 5px 0;
             font-size: 1em;
             font-weight: normal;
+            color: #333; /* Asegurar color de texto en resultados */
         }
         .result-item .explanation {
             font-style: italic;
             font-size: 0.9em;
             color: #555;
         }
+
+        @media (max-width: 600px) {
+            .button-group { 
+                flex-direction: column;
+            }
+             .button-group button, .button-group .option-button {
+                width: 100%;
+            }
+            #quiz-container {
+                padding: 15px;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Examen Verdadero/Falso</h1>
-        <h2 id="subject-title">Dirección de Recursos Humanos</h2>
+    <div id="quiz-container">
+        <h1>Examen Verdadero/Falso</h1> 
+        <h2 id="subject-title-header">Dirección de Recursos Humanos</h2>
 
-        <div id="quiz-setup">
-            <button id="start-button" class="navigation" onclick="startQuiz()">Comenzar Examen (~30 Preguntas)</button>
+        <div id="welcome-screen" class="screen active">
+            <p>¡Bienvenido al Examen de Dirección de Recursos Humanos!</p>
+            <p>Este test consta de aproximadamente 30 preguntas de Verdadero o Falso.
+               Las respuestas correctas suman 1 punto. Las incorrectas restan 0.5 puntos.
+            </p>
+            <button id="start-button">Comenzar Examen</button>
         </div>
 
-        <div id="quiz-area" style="display:none;">
-            <div class="question-area">
-                <p id="question-number"></p>
-                <p id="question-text" class="question-text"></p>
-                <div class="options">
-                    <button id="true-button" class="true" onclick="selectAnswer(true)">Verdadero</button>
-                    <button id="false-button" class="false" onclick="selectAnswer(false)">Falso</button>
-                </div>
-                <div id="feedback-area" class="feedback-area" style="display:none;">
-                    <p id="feedback-text"></p>
-                    <p id="feedback-explanation" class="explanation"></p>
-                </div>
+        <div id="quiz-screen" class="screen">
+            <div id="question-area-wrapper">
+                <span id="question-number-label"></span>
+                <p id="question-text-label"></p>
             </div>
-            <div class="navigation">
-                 <button id="next-question-button" style="display:none;" onclick="nextQuestion()">Siguiente Pregunta</button>
+
+            <div class="button-group">
+                <button class="option-button true-style" id="true-button">Verdadero</button>
+                <button class="option-button false-style" id="false-button">Falso</button>
             </div>
+            
+            <div id="feedback-message-area" style="display:none;">
+                <p id="feedback-text-content"></p>
+                <p id="feedback-explanation-content" class="explanation"></p>
+            </div>
+
+            <button id="next-question-button" style="display:none;">Siguiente Pregunta</button>
         </div>
 
-        <div id="results-area" class="results-area" style="display:none;">
-            <h2>Resultados del Examen</h2>
-            <p id="score"></p>
-            <p id="summary"></p>
-            <div id="detailed-results"></div>
-            <button class="navigation" onclick="startQuiz()">Realizar Otro Examen</button>
+        <div id="results-screen" class="screen">
+            <div class="final-results-wrapper">
+                <h2>Resultados del Examen</h2>
+                <p id="score-text"></p>
+                <p id="summary-text"></p>
+                <div id="detailed-results-content"></div>
+            </div>
+            <button id="restart-button">Realizar Otro Examen</button>
         </div>
+
     </div>
 
-    <script>
+ <script>
         // !!! IMPORTANTE: POPULA ESTE ARRAY CON TUS PREGUNTAS EXTRAÍDAS !!!
         const allQuestions = [
             // --- De PREGUNTAS-ORDINARIA.pdf ---
@@ -1023,25 +1159,711 @@
     statement: "El reclutamiento externo mal gestionado puede producir endogamia en la organización.",
     answer: false,
     explanation: "La endogamia se produce más comúnmente por un reclutamiento interno excesivo o mal gestionado."
-}
+},
+{
+    statement: "En la actualidad, los recursos humanos se consideran un coste más a minimizar en la empresa.",
+    answer: false,
+    explanation: "ya que actualmente, el factor humano es un factor estratégico, esa visión de los recursos humanos no es actual."
+  },
+  {
+    statement: "Un objetivo explícito de la función de la función de RRHH es incrementar la productividad del factor humano.",
+    answer: false,
+    explanation: "es un factor implícito, ya que se considera como explícito a aquellos objetivos que se encargan de atraer, retener, motivar y animar a los candidatos. Y en este caso al hablar de productividad, hace referencia a un objetivo implícito."
+  },
+  {
+    statement: "Dentro de los procesos de afectación se encontrarían las prácticas de planificación, formación y valoración.",
+    answer: false,
+    explanation: "Dentro de los procesos de afectación se encuentran las prácticas reclutamiento."
+  },
+  {
+    statement: "A medida que crecen las empresas los directores de RRHH incrementan sus estatus en la jerarquía directiva e intervienen en la definición de la estratégica empresarial.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "El desarrollo de una marca como empleador (Employer Branding) tiene como objetivo mejorar la imagen de la empresa con vistas a incrementar sus clientes.",
+    answer: false,
+    explanation: "El objetivo es atraer y retener a los mejores profesionales."
+  },
+  {
+    statement: "Actualmente el director de RRHH es un gestor que está especializado en aspectos económicos y en los aspectos humanos o sociales del ser humano.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "Entre las tendencias de la gestión de RRHH se encuentran: la gestión de la diversidad, la gestión del talento y el empowerment.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "Entre las tendencias de la gestión de RRHH se encuentran: la gestión de la diversidad, el personal branding y el empowerment.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "Entre las cualidades que debería tener un director de RRHH está el tener un enfoque proactivo, es decir, disponer de credibilidad y conocimiento.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "El departamento de RRHH no es igual de importante y complejo en todas las organizaciones pero existe en todas las organizaciones",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "El departamento de RRHH es igual de importante y complejo en todas las organizaciones.",
+    answer: false,
+    explanation: "El departamento de RRHH puede variar en importancia y complejidad en diferentes organizaciones."
+  },
+  {
+    statement: "Los objetivos explícitos son los que presentan el alcance estratégico de la gestión de los RRHH.",
+    answer: false,
+    explanation: "Los objetivos explícitos suelen ser más tácticos, mientras que los objetivos a largo plazo son los que representan el alcance estratégico de la gestión de los RRHH."
+  },
+  {
+    statement: "La gestión de la diversidad es una estrategia integral basada en crear una plantilla diversa de empleados, que aporten innovación, nuevas opciones y puntos de vista, soluciones creativas, y conocimientos de diferentes culturas y mercados.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "La gestión de la diversidad es una estrategia integral basada en crear una plantilla diversa de empleados.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "En la gestión del talento en la fase de desarrollo se incluye coaching, mentoring y retribución.",
+    answer: false,
+    explanation: "Retribución es de atracción."
+  },
+  {
+    statement: "En la gestión del talento en la fase de desarrollo se incluye coaching, mentoring y personal branding.",
+    answer: false,
+    explanation: "El personal branding no es típicamente una parte de la fase de desarrollo en la gestión del talento."
+  },
+  {
+    statement: "En la gestión del talento en la fase de desarrollo se incluye coaching, mentoring y assesment center.",
+    answer: false,
+    explanation: "Assessment center es de identificación."
+  },
+  {
+    statement: "Los procesos de afectación están relacionados entre sí pero no están relacionados con los procesos de formación y desarrollo.",
+    answer: false,
+    explanation: "Los procesos de afectación están relacionados tanto entre sí como con los procesos de formación y desarrollo."
+  },
+  {
+    statement: "Actualmente, el director de RRHH es un gestor especializado tanto en los aspectos económicos como en los humanos o sociales del ser humano. El director de RRHH se encarga de diseñar las estrategias, políticas y prácticas de gestión.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "La especificación o perfil del puesto recoge la información relativa a cada puesto con relación a las competencias del trabajador",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "Los trabajadores temporales son los que tienen una jornada laboral más reducida",
+    answer: false,
+    explanation: "Los trabajadores temporales son aquellos que trabajan bajo un contrato de duración determinada y no necesariamente con una jornada laboral reducida."
+  },
+  {
+    statement: "Los trabajadores temporales son los que trabajan un periodo corto de tiempo para adquirir experiencia laboral.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "Los trabajadores temporales son los que trabajan un periodo corto de tiempo para adquirir experiencia laboral y tienen una jornada laboral más reducida.",
+    answer: false,
+    explanation: "No necesariamente los trabajadores temporales tienen una jornada laboral más reducida."
+  },
+  {
+    statement: "La observación como método utilizado en el análisis de puestos permite analizar varios puestos de manera simultánea a un bajo coste.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "La observación como método utilizado en el análisis de puestos permite recoger la opinión de un grupo de personas especialistas.",
+    answer: false,
+    explanation: "La observación como método utilizado en el análisis de puestos de trabajo no permite recoger la opinión de un grupo de personas especialistas."
+  },
+  {
+    statement: "La observación como método utilizado en el análisis de puestos permite servir para obtener información útil de puestos muy especializados",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "Los tipos de cuestionarios que se utilizan son: abiertos y mixto",
+    answer: false,
+    explanation: "Los tipos de cuestionarios utilizados pueden ser abiertos, cerrados o mixtos."
+  },
+  {
+    statement: "Los tipos de cuestionarios que se utilizan son: abiertos y cerrado",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "Los tipos de cuestionarios que se utilizan son: cerrado y mixto",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "El análisis de puestos de trabajo es el proceso a través del cual la empresa recopila y analiza la información sobre el puesto de trabajo con la intención de identificar las tareas y obligaciones",
+    answer: true,
+    explanation: "Aunque incompleto. Además de las tareas y obligaciones, se deberían identificar las responsabilidades y competencias necesarias para el puesto."
+  },
+  {
+    statement: "El análisis de puestos de trabajo es el proceso a través del cual la empresa recopila y analiza la información sobre el puesto de trabajo con la intención de identificar las tareas del puesto.",
+    answer: false,
+    explanation: "Es incompleto. Además de las tareas, también se deben identificar las responsabilidades, competencias y habilidades requeridas para el puesto."
+  },
+  {
+    statement: "El análisis de puestos de trabajo es el proceso a través del cual la empresa recopila y analiza la información sobre el puesto de trabajo con la intención de identificar las tareas, y responsabilidades del puesto.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "El análisis de puestos de trabajo influye solo en la selección y formación de los recursos humanos.",
+    answer: false,
+    explanation: "El análisis de puestos de trabajo influye en muchos aspectos de los RRHH, incluyendo la planificación de RRHH, selección, formación, sistema retributivo, evaluación del rendimiento y desarrollo de carrera."
+  },
+  {
+    statement: "El análisis de puestos de trabajo influye solo en la planificación y selección de los RRHH",
+    answer: false,
+    explanation: "El análisis de puestos de trabajo influye en la planificación, selección, formación, sistema retributivo, evaluación del rendimiento y desarrollo de carrera de los RRHH."
+  },
+  {
+    statement: "El análisis de puestos de trabajo influye solo en la selección, formación y sistema retributivo de los RRHH.",
+    answer: false,
+    explanation: "El análisis de puestos de trabajo influye en la planificación, selección, formación, sistema retributivo, evaluación del rendimiento y desarrollo de carrera de los RRHH."
+  },
+  {
+    statement: "Cuando el análisis de puestos implica la redacción de la descripción de puestos teniendo en cuenta no solo las tareas y responsabilidades, sino también los conocimientos, experiencias y competencias, se refiere al análisis multifuncional.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "Cuando el análisis de puestos implica la redacción de la descripción de puestos teniendo en cuenta no solo las tareas y responsabilidades, sino también los conocimientos, experiencias y competencias, se refiere a la especificación del puesto de trabajo.",
+    answer: false,
+    explanation: "Se refiere al análisis de puestos."
+  },
+  {
+    statement: "Cuando el análisis de puestos implica la redacción de la descripción de puestos teniendo en cuenta no solo las tareas y responsabilidades, sino también los conocimientos, experiencias y competencias, se refiere a la reingeniería.",
+    answer: false,
+    explanation: "Se refiere al análisis de puestos."
+  },
+  {
+    statement: "Entre las técnicas utilizadas para realizar el rediseño de puestos se encuentran la simplificación del puesto, la ampliación del puesto y la reestructuración del puesto.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "Entre las técnicas utilizadas para realizar el rediseño de puestos se encuentran la simplificación del puesto, el enriquecimiento del puesto y la reestructuración del puesto.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "En la fase de análisis de puestos de trabajo, entre otras cosas, se trata de reunir las características y capacidades humanas necesarias.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "En la fase análisis de puestos de trabajo, entre otras cosas, se trata de determinar qué puestos de trabajo se van a analizar de reunir las características y capacidades humanas necesarias.",
+    answer: false,
+    explanation: "En la fase de análisis de puestos de trabajo, se determinan los puestos a analizar y se recopilan datos sobre las actividades laborales, características y capacidades humanas necesarias para esos puestos."
+  },
+  {
+    statement: "En la fase análisis de puestos de trabajo, entre otras cosas, se trata de determinar qué puestos de trabajo se van a analizar",
+    answer: false,
+    explanation: "En la fase de análisis de puestos de trabajo, no solo se determinan los puestos a analizar, también se recopilan datos sobre las actividades laborales, las características y las capacidades humanas necesarias para esos puestos."
+  },
+  {
+    statement: "En la planificación empresarial la empresa analiza la cualificación actual de la plantilla.",
+    answer: true,
+    explanation: "En la planificación empresarial, es común analizar la cualificación actual de la plantilla."
+  },
+  {
+    statement: "En la planificación de RRHH, se hace un estudio sobre las fuerzas del mercado.",
+    answer: true,
+    explanation: "La planificación de RRHH puede incluir un estudio de las fuerzas del mercado, como la disponibilidad de trabajadores calificados en una determinada área o industria."
+  },
+  {
+    statement: "En la planificación de RRHH, la empresa analiza sus negocios y recursos.",
+    answer: true,
+    explanation: "En la planificación de RRHH, la empresa debe considerar sus recursos, incluyendo sus empleados, y la naturaleza de sus operaciones."
+  },
+  {
+    statement: "Las jubilaciones son uno de los factores que modifican la demanda de personal.",
+    answer: true,
+    explanation: "Las jubilaciones pueden afectar la demanda de personal al reducir el número de empleados disponibles en la empresa."
+  },
+  {
+    statement: "La demanda de RRHH de una empresa no se puede planificar.",
+    answer: false,
+    explanation: "La demanda de RRHH puede y debe ser planificada para asegurar que la empresa tenga suficiente personal para cumplir con sus necesidades."
+  },
+  {
+    statement: "Ante situaciones de crisis económica, las empresas suelen hacer cambios en sus planificaciones de RRHH.",
+    answer: true,
+    explanation: "Las empresas a menudo deben adaptar sus planificaciones de RRHH en respuesta a las crisis económicas."
+  },
+  {
+    statement: "El coste de un programa de outplacement o recolocación es asumido por la empresa que despide al empleado.",
+    answer: true,
+    explanation: "Los costos de los programas de outplacement son normalmente cubiertos por la empresa que despide al empleado."
+  },
+  {
+    statement: "La planificación de RRHH es lo mismo que la planificación empresarial.",
+    answer: false,
+    explanation: "Aunque ambos están interrelacionados, la planificación de RRHH y la planificación empresarial son distintas y tienen enfoques diferentes."
+  },
+  {
+    statement: "Con la planificación de RRHH, la empresa establece planes y programas para asegurarse el número de personal, con la cualificación necesaria, en los puestos adecuados y en el momento oportuno.",
+    answer: true,
+    explanation: "La planificación de RRHH se centra en asegurar que la empresa tenga el personal adecuado, en los puestos correctos, con la formación necesaria y en el momento adecuado."
+  },
+  {
+    statement: "La administración del personal se preocupa por la planificación de plantilla.",
+    answer: true,
+    explanation: "La planificación de la plantilla es una parte importante de la administración del personal."
+  },
+  {
+    statement: "El coste de un programa de outplacement o recolocación es asumido por la empresa que despide al empleado.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "El programa de outplacement o recolocación tiene como objetivo minimizar las demandas judiciales que puedan interponer los trabajadores despedidos.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "Para hacer una planificación de plantilla es necesario hacer un análisis de las necesidades de plantilla existentes.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "La limitación de la contratación es una medida a través de la cual se puede corregir el defecto en la oferta de personal.",
+    answer: false,
+    explanation: "Se corrige el exceso de oferta. El defecto de personal es cuando faltan trabajadores."
+  },
+  {
+    statement: "Los planes de RRHH se pueden clasificar en planes a largo, medio y corto plazo.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "La planificación de la sucesión permite tomar decisiones sobre las promociones internas.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "Para hacer una planificación de plantilla es necesario hacer un análisis de las necesidades de plantilla existentes.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "La limitación de la contratación es una medida a través de la cual se puede corregir el defecto en la oferta de personal.",
+    answer: false,
+    explanation: "Se corrige así el Exceso en la oferta de personal."
+  },
+  {
+    statement: "Los planes de RRHH se pueden clasificar en planes a largo, medio y corto plazo.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "La ruptura laboral involuntaria incluye: despidos, reducciones de plantilla y jubilación anticipada.",
+    answer: false,
+    explanation: "Involuntaria: Despidos individuales y colectivos o reducciones de plantilla."
+  },
+  {
+    statement: "La ruptura laboral voluntaria: dimisión, jubilación y jubilación anticipada.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "La ruptura laboral involuntaria: despidos y jubilaciones anticipadas o no.",
+    answer: false,
+    explanation: "Involuntaria: despidos individuales y colectivos o reducciones de plantilla."
+  },
+  {
+    statement: "La ruptura laboral supone la desvinculación del empleado con la empresa que puede ser voluntaria o involuntaria.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "Si la desvinculación del empleado con la empresa es voluntaria no se considera ruptura laboral.",
+    answer: false,
+    explanation: "La desvinculación voluntaria del empleado también se considera una forma de ruptura laboral."
+  },
+  {
+    statement: "La excedencia es supresión laboral.",
+    answer: false,
+    explanation: "La excedencia no es supresión laboral, es un período temporal de ausencia del trabajo otorgado por el empleador."
+  },
+  {
+    statement: "Entre las alternativas a la reducción de plantillas se proponen: contratar a nuevos empleados.",
+    answer: false,
+    explanation: "Contratar a nuevos empleados no es una alternativa a la reducción de la plantilla, sino más bien una acción contraproducente."
+  },
+  {
+    statement: "Entre las alternativas a la reducción de plantillas se proponen: renovar los contratos que finalizan.",
+    answer: false,
+    explanation: "Renovar contratos que finalizan no necesariamente sirve como una alternativa a la reducción de plantillas."
+  },
+  {
+    statement: "Entre las alternativas a la reducción de plantillas se proponen: aumentar las horas extras.",
+    answer: false,
+    explanation: ""
+  },
+  {
+    statement: "Para obtener información sobre la oferta externa de trabajo se usan las auditorías de RRHH en las empresas.",
+    answer: false,
+    explanation: "Las auditorías de RRHH se usan para evaluar las prácticas y políticas de RRHH dentro de la empresa, no para obtener información sobre la oferta externa de trabajo."
+  },
+  {
+    statement: "Los organigramas recogen el porcentaje de empleados que mantienen su puesto año a año.",
+    answer: false,
+    explanation: "Los organigramas representan la estructura organizativa de una empresa, no el porcentaje de empleados que mantienen su puesto año tras año."
+  },
+  {
+    statement: "Las auditorías de RRHH ofrecen un análisis de la tasa de empleo de las empresas de un país.",
+    answer: false,
+    explanation: "Las auditorías de RRHH se centran en las prácticas de RRHH de la empresa, no en la tasa de empleo en todo el país."
+  },
+  {
+    statement: "La entrevista es el método más común en la selección de personal, aunque es una prueba imprecisa y subjetiva.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "El outdoor training es una formación mayoritariamente teórica que se imparte al aire libre para adquirir conocimientos más que habilidades y actitudes.",
+    answer: false,
+    explanation: "Es una formación de carácter práctico en la que se adquieren habilidades individuales y grupales al aire libre."
+  },
+  {
+    statement: "Se denomina empleabilidad a la sucesión de actividades y puestos de trabajo desempeñados por una persona a lo largo de su vida, así como las actitudes y reacciones asociadas que experimenta.",
+    answer: false,
+    explanation: "Esa definición se corresponde con la carrera profesional."
+  },
+  {
+    statement: "La excedencia debida a la asignación o elección para un cargo público o a la realización de funciones sindicales de ámbito provincial o superior se considera excedencia voluntaria.",
+    answer: false,
+    explanation: "Se trata de una excedencia obligatoria que las empresas siempre tienen que concederle al trabajador."
+  },
+  {
+    statement: "Un ERE es un proceso sustractivo de reducción de plantilla y por tanto se trata de una ruptura laboral involuntaria.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "La autoevaluación es una fuente de evaluación del desempeño que sirve para incrementar el compromiso de los empleados pero que debe ser utilizada teniendo en cuenta los sesgos que conlleva.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "El buen ambiente laboral, la retroalimentación de la información y la flexibilidad laboral son considerados un tipo de remuneración indirecta.",
+    answer: false,
+    explanation: "Se considera retribución no financiera o emocional."
+  },
+  {
+    statement: "Hay equidad individual si dos trabajadores que tienen el mismo puesto pero obtienen diferentes resultados en su desempeño no perciben lo mismo como recompensa.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "Es importante que los responsables de realizar un proceso de selección posean la ficha del puesto para el que se hace la selección. Dicha ficha debe recoger el profesiograma del puesto (también denominado especificación) donde se definen las tareas, obligaciones y responsabilidades que deben asumir quienes lo van a ocupar.",
+    answer: false,
+    explanation: "Cuando se definen las responsabilidades, tareas y obligaciones se denomina descripción."
+  },
+  {
+    statement: "Si una empresa se encuentra en una situación de crisis debido por ejemplo a la entrada de un nuevo competidor en su sector que venda a precios mucho más baratos, es posible que el área de recursos humanos se tenga que enfrentar a problemas en la planificación de la plantilla y que la oferta de trabajo exceda a la demanda.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "La fiabilidad hace referencia al grado en que una técnica de selección mide el conocimiento, las habilidades o las capacidades requeridas por el perfil de un puesto.",
+    answer: false,
+    explanation: "Esa definición se corresponde con la validez."
+  },
+  {
+    statement: "Las agencias privadas de colocación contratan de manera temporal a empleados para que realicen su trabajo en otra empresa con la que han llegado a un acuerdo.",
+    answer: false,
+    explanation: "Eso lo realizan las ETT (Empresas de Trabajo Temporal)."
+  },
+  {
+    statement: "Los métodos de medición del rendimiento que son objetivos, también llamados de resultados, miden el rendimiento en función de lo que aporta la persona a la organización en base a su trabajo.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "Es necesario que el coach tenga experiencia en el área donde asesora al coachee para poder ayudarle a maximizar su potencial.",
+    answer: false,
+    explanation: "No es necesario. En el caso del mentoring sí que es necesario que el mentor tenga experiencia en el área."
+  },
+  {
+    statement: "La socialización puede ser informal, es decir, al margen de los conductos oficiales.",
+    answer: true,
+    explanation: "La socialización puede ser informal, ocurriendo de manera natural a través de las interacciones cotidianas en el lugar de trabajo."
+  },
+  {
+    statement: "En la entrevista de contratación se explica la oferta de trabajo que el candidato elegido podrá aceptar o rechazar.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "Los impresos de biodatos son una versión detallada de la solicitud en la que los candidatos contestan a una serie de preguntas sobre su salud.",
+    answer: false,
+    explanation: "Los impresos de biodatos no se enfocan solo en la salud de los candidatos. Estos formularios recogen información diversa sobre la vida y experiencia laboral de los candidatos."
+  },
+  {
+    statement: "El inventario de habilidades y las listas de ascensos son herramientas para hacer reclutamiento externo.",
+    answer: false,
+    explanation: "El inventario de habilidades y las listas de ascensos son herramientas para el reclutamiento interno, no externo."
+  },
+  {
+    statement: "Los juegos de empresas, las entrevistas y assessment centres son técnicas de selección.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "Entre las fuentes de reclutamiento interno se encuentran las agencias públicas de empleo.",
+    answer: false,
+    explanation: "Las agencias públicas de empleo son una fuente de reclutamiento externo."
+  },
+  {
+    statement: "Los programas que se utilizan para mejorar los conocimientos, habilidades y actitudes de la plantilla tanto para el trabajo actual como para el futuro son, en esencia, los mismos.",
+    answer: false,
+    explanation: "Los programas para mejorar las habilidades de los empleados pueden variar ampliamente dependiendo del objetivo, la audiencia y la empresa."
+  },
+  {
+    statement: "El alcance de la formación es el grupo o la organización.",
+    answer: true,
+    explanation: "La formación puede tener un enfoque individual, en un grupo, o incluso a nivel de toda la organización, dependiendo de los objetivos de la formación."
+  },
+  {
+    statement: "Las fases del programa de formación son: identificación de las necesidades, diseño y evaluación.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "Uno de los beneficios indirectos de la formación es que incide de forma positiva en variables de recursos humanos como el compromiso y los niveles de rotación o absentismo.",
+    answer: true,
+    explanation: "Algunas personas pueden considerar que beneficios como el impacto en el compromiso y la rotación son indirectos porque son consecuencias de la formación, en lugar de ser su objetivo principal."
+  },
+  {
+    statement: "En la fase de premisas de la gestión de la carrera profesional se identifican las fortalezas y debilidades del empleado.",
+    answer: false,
+    explanation: "Es en la etapa de Valoración."
+  },
+  {
+    statement: "La evaluación del rendimiento es un proceso formal y sistemático.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "La finalidad de la evaluación es ver si el trabajador es productivo y si podrá mejorar su rendimiento en el futuro.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "Los fines de la evaluación del rendimiento no son solo evaluar lo que no se hace bien, sino buscar la manera de mejorarlo.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "La evaluación del rendimiento es un proceso de 4 etapas.",
+    answer: true,
+    explanation: "Puede ser correcta si se refiere a una etapa de establecimiento de metas, medición, feedback y planificación de desarrollo."
+  },
+  {
+    statement: "Lo más habitual es que sea el departamento de RRHH el encargado de realizar las evaluaciones a los empleados.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "La evaluación 360º es la evaluación a través de todos los medios. Este método es el más completo y complejo.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "Existen dos criterios de evaluación: criterios objetivos y subjetivos.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "La practicidad en las características que deberían cumplir los criterios de evaluación significa que tienen que ser medibles y si es posible, cuantitativos.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "El método de categorización se basa en criterios absolutos y permiten evaluar al trabajador a través de factores que pueden ser más o menos aplicables.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "El método narrativo analiza la actuación o comportamiento de los empleados en el puesto de trabajo para detectar sus fortalezas, debilidades éxitos y fracasos. Permiten obtener una evaluación cualitativa.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "Los métodos con base en el desempeño pasado son: medidas de productividad e historial de logros.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "El método con base al desempeño futuro es la dirección o administración por objetivos.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "El método con base al desempeño futuro es la dirección o administración por objetivos puede dar una perspectiva distorsionada del rendimiento. No se tienen en cuenta cuestiones como la calidad o el servicio.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "En el método objetivo o de resultados, la jerarquización tiene base en el pasado y el evaluador clasifica a los empleados a través de una escala de preferencias.",
+    answer: false,
+    explanation: "El método objetivo o de resultados se enfoca en lo que un empleado logra en términos de resultados concretos, y no necesariamente incluye una jerarquización basada en el pasado."
+  },
+  {
+    statement: "El objetivo de la distribución forzosa es establecer diferentes grados de rendimiento entre empleados.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "Las listas de verificación o listas de revisión de conductas es útil como método complementario y permite obtener una información más general y simple que los métodos cuantitativos.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "Las formas narrativas o ensayos narrativos tienen base en el pasado.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "Las formas narrativas o ensayos narrativos tienen base en el pasado permiten detectar características específicas de cada empleado, pero es demasiado subjetivo. Es útil como complemento a otros métodos.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "Los incidentes críticos tienen base en el pasado y prestan especial atención al comportamiento.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "Los criterios de evaluación o assessment center son costosos en términos de tiempo y dinero, pero son muy adecuados para niveles directivos.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "El efecto halo y eco es un error que se produce cuando el evaluador generaliza una característica específica del evaluado a todos los aspectos de la evaluación de desempeño, dando un resultado superior o inferior al que merece el empleado.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "El error de lenidad el evaluador quiere evitar problemas con los evaluados y lo que hace es calificar de forma indulgente dando, en general, una calificación más alta.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "Error de severidad se tiende a calificar de forma desfavorable por falta de experiencia del evaluador, desconocimiento de los factores de evaluación o para lograr impresionar a los superiores.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "El etnocentrismo es la tendencia a considerar que los valores propios son siempre los más deseables.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "En la gestión y mejora del rendimiento hay que identificar las causas de los problemas de rendimiento y tomar medidas para resolverlos, formular estrategias y planes de acción.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "En la gestión y mejora del una vez identificadas la causas se definen las estrategias disponibles y se establecen los planes de actuación para resolver el problema.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "Se proponen tres tipos de estrategias en la gestión y mejora del rendimiento: estrategias de reforzamiento positivo, negativo y estrategias en caso de que las anteriores no funcionen.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "En el tipo de entrevista mixta se combinan las de hablar y convencer con la solución de problemas, forma que la primera sirva para la evaluación y la segunda para la mejora.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "La retroalimentación o feedback permanente busca personalizar la evaluación y orientar el desarrollo de las capacidades hacia el logro de los objetivos.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "Los procesos sustractivos solamente afectan a los procesos de evaluación y compensación ya que se trata de una etapa final en el proceso de gestión de RRHH.",
+    answer: false,
+    explanation: "Los procesos sustractivos pueden afectar a todos los aspectos de la gestión de RRHH, no solo la evaluación y compensación."
+  },
+  {
+    statement: "Los tipos de procesos sustractivos con los que nos podemos encontrar son la desvinculación voluntaria o involuntaria del trabajador.",
+    answer: false,
+    explanation: "Estos son los tipos de rupturas laborales."
+  },
+  {
+    statement: "Un indicador de la ruptura laboral existente en una empresa es la tasa o índice de rotación laboral.",
+    answer: true,
+    explanation: ""
+  },
+  {
+    statement: "Con la excedencia (supresión laboral) existe una desvinculación temporal del trabajador con la empresa, lo cual lleva a la extinción del contrato del trabajo.",
+    answer: false,
+    explanation: "Implica la suspensión del contrato, no la extinción."
+  },
+  {
+    statement: "Los sistemas de outplacement mezclan el coaching con la recolocación de los empleados en el mercado.",
+    answer: false,
+    explanation: "Hablamos del coachplacement."
+  },
+  {
+    statement: "La evaluación del rendimiento no tiene ninguna relación con el sistema de retribución de la empresa.",
+    answer: false,
+    explanation: "La evaluación del rendimiento puede y generalmente está vinculada al sistema de retribución de la empresa, ya que las evaluaciones de rendimiento pueden ser utilizadas para determinar los aumentos salariales, las bonificaciones, las promociones y otras decisiones de retribución."
+  },
+  {
+    statement: "La descripción del puesto de trabajo es el documento que recoge el perfil del puesto, es decir, la información relativa a las tareas, obligaciones, responsabilidades y condiciones laborales del puesto.",
+    answer: false,
+    explanation: "El perfil del puesto recoge los conocimientos, habilidades, experiencias, la formación necesaria para desempeñar el puesto."
+  },
         ];
 
         let currentQuizQuestions = [];
         let currentQuestionIndex = 0;
-        let userAnswersRecord = []; // Almacenará el registro para los resultados finales
+        let userAnswersRecord = [];
         const questionsPerExam = 30;
 
-        const quizSetupDiv = document.getElementById('quiz-setup');
-        const quizAreaDiv = document.getElementById('quiz-area');
-        const resultsAreaDiv = document.getElementById('results-area');
-        const questionNumberP = document.getElementById('question-number');
-        const questionTextP = document.getElementById('question-text');
-        const feedbackAreaDiv = document.getElementById('feedback-area');
-        const feedbackTextP = document.getElementById('feedback-text');
-        const feedbackExplanationP = document.getElementById('feedback-explanation');
-        const nextButton = document.getElementById('next-question-button');
+        // HTML Elements
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultsScreen = document.getElementById('results-screen');
+
+        const startButton = document.getElementById('start-button');
+        const restartButton = document.getElementById('restart-button');
+
+        const questionNumberLabel = document.getElementById('question-number-label');
+        const questionTextLabel = document.getElementById('question-text-label');
         const trueButton = document.getElementById('true-button');
         const falseButton = document.getElementById('false-button');
+
+        const feedbackMessageArea = document.getElementById('feedback-message-area');
+        const feedbackTextContent = document.getElementById('feedback-text-content');
+        const feedbackExplanationContent = document.getElementById('feedback-explanation-content');
+
+        const nextQuestionButton = document.getElementById('next-question-button');
+
+        const scoreText = document.getElementById('score-text');
+        const summaryText = document.getElementById('summary-text');
+        const detailedResultsContent = document.getElementById('detailed-results-content');
 
 
         function shuffleArray(array) {
@@ -1051,107 +1873,110 @@
             }
         }
 
-        function startQuiz() {
+        function hideAllScreens() {
+            welcomeScreen.classList.remove('active');
+            quizScreen.classList.remove('active');
+            resultsScreen.classList.remove('active');
+        }
+
+        function initializeQuiz() {
             shuffleArray(allQuestions);
             currentQuizQuestions = allQuestions.slice(0, Math.min(questionsPerExam, allQuestions.length));
             currentQuestionIndex = 0;
             userAnswersRecord = [];
 
-            quizSetupDiv.style.display = 'none';
-            resultsAreaDiv.style.display = 'none';
-            quizAreaDiv.style.display = 'block';
-            nextButton.style.display = 'none';
-            feedbackAreaDiv.style.display = 'none';
-            
+            hideAllScreens();
+            quizScreen.classList.add('active');
+
+            nextQuestionButton.onclick = proceedToNextQuestion; // Asignar el handler
+            nextQuestionButton.textContent = "Siguiente Pregunta"; // Resetear texto
+            nextQuestionButton.style.display = 'none';
+            feedbackMessageArea.style.display = 'none';
+
             loadQuestion();
         }
 
         function loadQuestion() {
-            feedbackAreaDiv.style.display = 'none'; // Ocultar feedback anterior
-            feedbackTextP.textContent = '';
-            feedbackExplanationP.textContent = '';
-            nextButton.style.display = 'none';
+            feedbackMessageArea.style.display = 'none';
+            feedbackTextContent.textContent = '';
+            feedbackExplanationContent.textContent = '';
+            nextQuestionButton.style.display = 'none';
             trueButton.disabled = false;
             falseButton.disabled = false;
 
             if (currentQuestionIndex < currentQuizQuestions.length) {
                 const question = currentQuizQuestions[currentQuestionIndex];
-                questionNumberP.textContent = `Pregunta ${currentQuestionIndex + 1} de ${currentQuizQuestions.length}`;
-                questionTextP.textContent = question.statement;
+                questionNumberLabel.textContent = `Pregunta ${currentQuestionIndex + 1} de ${currentQuizQuestions.length}`;
+                questionTextLabel.textContent = question.statement;
             } else {
                 showResults();
             }
         }
 
-                function selectAnswer(userSelectedAnswer) {
+        function selectAnswer(userSelectedAnswer) {
             trueButton.disabled = true;
             falseButton.disabled = true;
 
             const currentQuestion = currentQuizQuestions[currentQuestionIndex];
-            userAnswersRecord.push({ // Guardar para los resultados finales
+            userAnswersRecord.push({
                 statement: currentQuestion.statement,
                 userAnswer: userSelectedAnswer,
                 correctAnswer: currentQuestion.answer,
                 explanation: currentQuestion.explanation
             });
 
-            feedbackAreaDiv.style.display = 'block';
-            feedbackExplanationP.textContent = ''; // Limpiar explicación previa
+            feedbackMessageArea.style.display = 'block';
+            feedbackExplanationContent.textContent = '';
 
             if (userSelectedAnswer === currentQuestion.answer) {
-                feedbackTextP.textContent = "¡Correcto!";
-                feedbackAreaDiv.className = 'feedback-area correct';
-            } else { // El usuario ha fallado
-                feedbackTextP.textContent = "Incorrecto.";
-                feedbackAreaDiv.className = 'feedback-area incorrect';
+                feedbackTextContent.textContent = "¡Correcto!";
+                feedbackMessageArea.className = 'feedback-message-area correct'; // Usar la clase CSS definida
+            } else {
+                feedbackTextContent.textContent = "Incorrecto.";
+                feedbackMessageArea.className = 'feedback-message-area incorrect'; // Usar la clase CSS definida
             }
 
-            // --- NUEVA LÓGICA PARA MOSTRAR JUSTIFICACIÓN ---
-            // Si la RESPUESTA CORRECTA es FALSA y hay una explicación, mostrarla.
             if (currentQuestion.answer === false && currentQuestion.explanation && currentQuestion.explanation.trim() !== "") {
-                feedbackExplanationP.textContent = `Justificación: ${currentQuestion.explanation}`;
-            } 
-            // Si el usuario falló Y la respuesta correcta era VERDADERA (y no hay justificación para mostrar de la condición anterior)
+                feedbackExplanationContent.textContent = `Justificación: ${currentQuestion.explanation}`;
+            }
             else if (userSelectedAnswer !== currentQuestion.answer && currentQuestion.answer === true) {
-                 feedbackExplanationP.textContent = `La respuesta correcta era: Verdadero.`;
+                 feedbackExplanationContent.textContent = `La respuesta correcta era: Verdadero.`;
             }
-            // Si el usuario falló, la respuesta correcta era FALSA, PERO NO hay explicación en los datos
             else if (userSelectedAnswer !== currentQuestion.answer && currentQuestion.answer === false && (!currentQuestion.explanation || currentQuestion.explanation.trim() === "")) {
-                feedbackExplanationP.textContent = `La respuesta correcta era: Falso. (No hay justificación detallada disponible).`;
+                feedbackExplanationContent.textContent = `La respuesta correcta era: Falso. (No hay justificación detallada disponible).`;
             }
-            // --- FIN DE NUEVA LÓGICA ---
-            
+
+
             if (currentQuestionIndex < currentQuizQuestions.length - 1) {
-                nextButton.style.display = 'block';
+                nextQuestionButton.textContent = "Siguiente Pregunta";
+                nextQuestionButton.onclick = proceedToNextQuestion; // Asegurar que llama a la función correcta
+                nextQuestionButton.style.display = 'block';
             } else {
-                nextButton.textContent = "Ver Resultados";
-                nextButton.onclick = showResults; 
-                nextButton.style.display = 'block';
+                nextQuestionButton.textContent = "Ver Resultados";
+                nextQuestionButton.onclick = showResults;
+                nextQuestionButton.style.display = 'block';
             }
         }
-        
-        function nextQuestion() {
+
+        function proceedToNextQuestion() {
             currentQuestionIndex++;
-            nextButton.textContent = "Siguiente Pregunta"; // Restaurar texto si se cambió
-            nextButton.onclick = nextQuestion; // Restaurar acción
             loadQuestion();
         }
 
 
         function showResults() {
-            quizAreaDiv.style.display = 'none';
-            resultsAreaDiv.style.display = 'block';
+            hideAllScreens();
+            resultsScreen.classList.add('active');
 
             let correctCount = 0;
             let incorrectCount = 0;
 
-            const detailedResultsDiv = document.getElementById('detailed-results');
-            detailedResultsDiv.innerHTML = '<h3>Respuestas Detalladas:</h3>';
+            detailedResultsContent.innerHTML = '<h3>Respuestas Detalladas:</h3>';
 
             userAnswersRecord.forEach((ans, index) => {
                 const itemDiv = document.createElement('div');
                 itemDiv.classList.add('result-item');
-                
+
                 let resultText = `<p><b>Pregunta ${index + 1}:</b> ${ans.statement}</p>`;
                 resultText += `<p>Tu respuesta: ${ans.userAnswer ? 'Verdadero' : 'Falso'}. `;
                 resultText += `Respuesta correcta: ${ans.correctAnswer ? 'Verdadero' : 'Falso'}.</p>`;
@@ -1159,26 +1984,40 @@
                 if (ans.userAnswer === ans.correctAnswer) {
                     correctCount++;
                     itemDiv.classList.add('correct');
-		    
                 } else {
                     incorrectCount++;
                     itemDiv.classList.add('incorrect');
-                    if (ans.explanation) {
+                    if (ans.explanation && ans.explanation.trim() !== "") {
                         resultText += `<p class="explanation">Explicación: ${ans.explanation}</p>`;
                     }
                 }
                 itemDiv.innerHTML = resultText;
-                detailedResultsDiv.appendChild(itemDiv);
+                detailedResultsContent.appendChild(itemDiv);
             });
 
             const scoreValue = correctCount - (incorrectCount / 2);
-            const finalScore = Math.max(0, scoreValue).toFixed(2); 
+            const finalScore = Math.max(0, scoreValue).toFixed(2);
             const totalPossibleBaseScore = currentQuizQuestions.length;
 
-            document.getElementById('score').textContent = `Puntuación Final: ${finalScore} / ${totalPossibleBaseScore}`;
-            document.getElementById('summary').textContent = `Respuestas Correctas: ${correctCount}, Respuestas Incorrectas: ${incorrectCount}.`;
+            scoreText.textContent = `Puntuación Final: ${finalScore} / ${totalPossibleBaseScore}`;
+            summaryText.textContent = `Respuestas Correctas: ${correctCount}, Respuestas Incorrectas: ${incorrectCount}.`;
         }
 
+        // Event Listeners
+        startButton.addEventListener('click', initializeQuiz);
+        restartButton.addEventListener('click', () => {
+            hideAllScreens();
+            welcomeScreen.classList.add('active');
+            // No se llama a initializeQuiz aquí, el usuario debe pulsar "Comenzar Examen"
+        });
+
+        trueButton.addEventListener('click', () => selectAnswer(true));
+        falseButton.addEventListener('click', () => selectAnswer(false));
+        // El nextQuestionButton.onclick se asigna dinámicamente en initializeQuiz y selectAnswer
+
+        // Initialize view
+        document.addEventListener('DOMContentLoaded', () => {
+            hideAllScreens();
+            welcomeScreen.classList.add('active');
+        });
     </script>
-</body>
-</html>
