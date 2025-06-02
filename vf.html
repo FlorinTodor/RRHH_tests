@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Examen V/F - Dirección de RRHH</title>
+    <title>Examen V/F Interactivo - Dirección de RRHH</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -33,30 +33,28 @@
 
         h1 {
             color: #2c3e50;
-            margin-bottom: 10px; /* Reducido margen */
+            margin-bottom: 10px;
             font-size: 2em;
             border-bottom: 2px solid #3498db;
             padding-bottom: 10px;
             display: inline-block;
         }
-        h2 { /* Estilo para el título secundario */
+        h2 {
             color: #34495e;
             font-size: 1.4em;
             margin-top: 0;
             margin-bottom: 25px;
         }
 
-
-        .screen { /* Clase genérica para pantallas */
+        .screen {
             display: none; 
             padding: 20px;
         }
-
         .screen.active {
             display: block; 
         }
 
-        #question-area-wrapper { /* Contenedor del área de pregunta original */
+        #question-area-wrapper {
             margin-bottom: 20px;
             text-align: left;
             border: 1px solid #eee;
@@ -88,7 +86,7 @@
         }
 
         button, .option-button {
-            padding: 12px 25px; /* Aumentado padding para botones V/F */
+            padding: 12px 25px;
             font-size: 1em; 
             border: none;
             border-radius: 8px;
@@ -109,18 +107,15 @@
             opacity: 0.7;
         }
         
-        #start-button { /* Estilo para el botón de empezar */
+        #start-button, #next-block-button { /* Start y Next Block button styles */
             background-color: #3498db;
             color: white;
-            display: block;
-            margin: 20px auto;
+            margin: 10px 5px;
         }
-
-        #start-button:hover:not(:disabled) {
+        #start-button:hover:not(:disabled), #next-block-button:hover:not(:disabled) {
             background-color: #2980b9;
         }
 
-        /* Estilos para botones V/F del primer ejemplo */
         .option-button.true-style {
             background-color: #4CAF50;
             color: white;
@@ -128,6 +123,15 @@
         .option-button.true-style:hover:not(:disabled) {
             background-color: #45a049;
         }
+        .option-button.true-style.selected-correct {
+            background-color: #388E3C !important; /* Darker green for selected correct */
+            border: 2px solid #2E7D32;
+        }
+         .option-button.true-style.selected-incorrect {
+            background-color: #D32F2F !important; /* Red for selected incorrect if true was right */
+            border: 2px solid #C62828;
+        }
+
 
         .option-button.false-style {
             background-color: #f44336;
@@ -136,37 +140,43 @@
          .option-button.false-style:hover:not(:disabled) {
             background-color: #da190b;
         }
-
-
-        #next-question-button {
-            background-color: #f39c12; /* Naranja del segundo ejemplo */
-            color: white;
-            display: block; /* Para centrar si es el único en su grupo */
-            margin: 20px auto;
+        .option-button.false-style.selected-correct {
+            background-color: #c62828 !important; /* Darker red for selected correct */
+            border: 2px solid #B71C1C;
+        }
+        .option-button.false-style.selected-incorrect {
+            background-color: #4CAF50 !important; /* Green for selected incorrect if false was right */
+            border: 2px solid #388E3C;
         }
 
+
+        #next-question-button { /* This is the button after answering a question */
+            background-color: #f39c12; 
+            color: white;
+            display: block; 
+            margin: 20px auto;
+        }
         #next-question-button:hover:not(:disabled) {
             background-color: #e67e22;
         }
 
-        #restart-button { /* Botón para reiniciar el examen */
+        /* Common style for all reset buttons */
+        .reset-button-style {
             background-color: #95a5a6;
             color: white;
-            display: block;
-            margin: 20px auto;
+            margin: 10px 5px;
         }
-
-        #restart-button:hover:not(:disabled) {
+        .reset-button-style:hover:not(:disabled) {
             background-color: #7f8c8d;
         }
         
-        /* Feedback styles from the first example */
         #feedback-message-area {
             margin-top: 15px;
             padding: 10px;
             border-radius: 5px;
             font-weight: bold;
-            text-align: left;
+            text-align: left; /* Kept from original */
+            min-height: 40px; /* Ensure space */
         }
         #feedback-message-area.correct {
             background-color: #d4edda;
@@ -183,55 +193,55 @@
             font-size: 0.9em;
             font-weight: normal;
             margin-top: 5px;
+            display: block; /* Ensure it takes space */
         }
 
+        /* Score Area styling (like in the image/SWAP test) */
+        #score-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            font-size: 1.1em;
+            color: #444;
+            flex-wrap: wrap; 
+            gap: 10px;
+        }
+        #score-area > div {
+            flex-grow: 1;
+            text-align: center; /* Center text within each score div */
+        }
+        #remaining-count-label-text { 
+             font-weight: bold;
+             color: #3498db;
+        }
 
-        .final-results-wrapper { /* Contenedor para resultados finales */
+        /* Results wrapper for block end and final results */
+        .results-wrapper-shared { 
             margin-top: 30px;
             padding: 25px;
             background-color: #eaf4fa;
             border-radius: 10px;
             border: 1px solid #3498db;
-            text-align: left;
+            text-align: left; /* From original V/F exam */
         }
-
-        .final-results-wrapper p {
+        .results-wrapper-shared p {
             font-size: 1.2em;
             margin-bottom: 10px;
             color: #2c3e50;
         }
-        .final-results-wrapper h3 {
+        .results-wrapper-shared h3 {
             color: #2c3e50;
             margin-top: 20px;
             border-bottom: 1px solid #bdc3c7;
             padding-bottom: 5px;
         }
+        .hidden-initially {
+            display: none !important; /* Ensure it's hidden */
+        }
 
-        /* Detailed results styles from the first example */
-        .result-item {
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-        }
-        .result-item.correct {
-            background-color: #d4edda;
-            border-left: 5px solid #28a745;
-        }
-        .result-item.incorrect {
-            background-color: #f8d7da;
-            border-left: 5px solid #dc3545;
-        }
-        .result-item p {
-            margin: 5px 0;
-            font-size: 1em;
-            font-weight: normal;
-            color: #333; /* Asegurar color de texto en resultados */
-        }
-        .result-item .explanation {
-            font-style: italic;
-            font-size: 0.9em;
-            color: #555;
-        }
 
         @media (max-width: 600px) {
             .button-group { 
@@ -239,24 +249,34 @@
             }
              .button-group button, .button-group .option-button {
                 width: 100%;
+                margin-bottom: 10px;
             }
             #quiz-container {
                 padding: 15px;
+            }
+            #score-area {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            #score-area > div {
+                margin-bottom: 5px;
             }
         }
     </style>
 </head>
 <body>
     <div id="quiz-container">
-        <h1>Examen Verdadero/Falso</h1> 
+        <h1>Examen V/F Interactivo</h1> 
         <h2 id="subject-title-header">Dirección de Recursos Humanos</h2>
 
         <div id="welcome-screen" class="screen active">
-            <p>¡Bienvenido al Examen de Dirección de Recursos Humanos!</p>
-            <p>Este test consta de aproximadamente 30 preguntas de Verdadero o Falso.
-               Las respuestas correctas suman 1 punto. Las incorrectas restan 0.5 puntos.
+            <p>¡Bienvenido al Examen Interactivo de Dirección de Recursos Humanos!</p>
+            <p>Este test consta de preguntas de Verdadero o Falso presentadas en bloques.
+               Si aciertas una pregunta, se elimina de la lista. Si fallas, volverá a aparecer más adelante.
             </p>
+            <p>Total de preguntas únicas en el banco: <span id="total-questions-bank-count"></span></p>
             <button id="start-button">Comenzar Examen</button>
+            <button id="reset-button-welcome" class="reset-button-style hidden-initially">Reiniciar Test Completo</button>
         </div>
 
         <div id="quiz-screen" class="screen">
@@ -272,20 +292,45 @@
             
             <div id="feedback-message-area" style="display:none;">
                 <p id="feedback-text-content"></p>
-                <p id="feedback-explanation-content" class="explanation"></p>
+                <p id="feedback-explanation-content" class="explanation" style="display:none;"></p>
             </div>
 
-            <button id="next-question-button" style="display:none;">Siguiente Pregunta</button>
+            <div class="button-group"> <!-- Navigation buttons within quiz screen -->
+                <button id="next-question-button" style="display:none;">Siguiente Pregunta / Ver Resultados Bloque</button>
+                 <button id="quiz-screen-reset-button" class="reset-button-style">Reiniciar Test Completo</button>
+            </div>
+
+            <div id="score-area">
+                <div>Aciertos: <span id="correct-answers-count">0</span></div>
+                <div>Fallos: <span id="incorrect-answers-count">0</span></div>
+                <div><span id="remaining-count-label-text">Preguntas restantes por responder:</span> <span id="remaining-questions-count">0</span></div>
+            </div>
+        </div>
+        
+        <div id="block-end-screen" class="screen">
+            <div class="results-wrapper-shared">
+                <h3>Resultados del Bloque</h3>
+                <p>Aciertos en este bloque: <span id="block-correct-count-display">0</span></p>
+                <p>Fallos en este bloque: <span id="block-incorrect-count-display">0</span></p>
+                <hr>
+                <p>Aciertos totales acumulados: <span id="total-correct-block-end">0</span></p>
+                <p>Fallos totales acumulados (histórico): <span id="total-incorrect-block-end">0</span></p>
+                <p>Preguntas restantes en la cola: <span id="remaining-on-block-end">0</span></p>
+            </div>
+            <button id="next-block-button">Siguiente Bloque</button>
+            <button id="reset-button-block-end" class="reset-button-style">Reiniciar Test Completo</button>
         </div>
 
-        <div id="results-screen" class="screen">
-            <div class="final-results-wrapper">
-                <h2>Resultados del Examen</h2>
-                <p id="score-text"></p>
-                <p id="summary-text"></p>
-                <div id="detailed-results-content"></div>
+
+        <div id="final-results-screen" class="screen"> <!-- Renamed from results-screen for clarity -->
+            <div class="results-wrapper-shared">
+                <h3>¡Test Completado!</h3>
+                <p>¡Has respondido correctamente a todas las preguntas del banco!</p>
+                <p>Aciertos totales: <span id="final-score-correct">0</span></p>
+                <p>Fallos totales (histórico de intentos): <span id="final-score-incorrect">0</span></p>
+                <!-- No detailed results per question here, as the goal is mastery -->
             </div>
-            <button id="restart-button">Realizar Otro Examen</button>
+            <button id="restart-final-button" class="reset-button-style">Realizar Test de Nuevo</button>
         </div>
 
     </div>
@@ -1372,8 +1417,8 @@
   },
   {
     statement: "En la fase análisis de puestos de trabajo, entre otras cosas, se trata de determinar qué puestos de trabajo se van a analizar",
-    answer: true,
-    explanation: ""
+    answer: false,
+    explanation: "En la fase de análisis de puestos de trabajo, no solo se determinan los puestos a analizar, también se recopilan datos sobre las actividades laborales, las características y las capacidades humanas necesarias para esos puestos."
   },
   {
     statement: "En la planificación empresarial la empresa analiza la cualificación actual de la plantilla.",
@@ -1837,18 +1882,35 @@
   },
         ];
 
-        let currentQuizQuestions = [];
-        let currentQuestionIndex = 0;
-        let userAnswersRecord = [];
-        const questionsPerExam = 20;
+       
+        // Quiz State Variables
+        let questionsPool = []; // Holds unique questions yet to be answered correctly
+        let currentBlockQuestions = [];
+        let currentQuestionInBlockIndex = 0;
+        
+        let totalCorrectAnswers = 0; // Overall correct answers (unique questions)
+        let totalIncorrectAttempts = 0; // Overall incorrect attempts (can be > unique questions)
+        
+        let blockCorrectCount = 0;
+        let blockIncorrectCount = 0;
+
+        const BLOCK_SIZE = 20; // Number of questions per block
 
         // HTML Elements
         const welcomeScreen = document.getElementById('welcome-screen');
         const quizScreen = document.getElementById('quiz-screen');
-        const resultsScreen = document.getElementById('results-screen');
+        const blockEndScreen = document.getElementById('block-end-screen');
+        const finalResultsScreen = document.getElementById('final-results-screen');
 
         const startButton = document.getElementById('start-button');
-        const restartButton = document.getElementById('restart-button');
+        const nextQuestionButton = document.getElementById('next-question-button');
+        const nextBlockButton = document.getElementById('next-block-button');
+        
+        const resetButtonWelcome = document.getElementById('reset-button-welcome');
+        const quizScreenResetButton = document.getElementById('quiz-screen-reset-button');
+        const resetButtonBlockEnd = document.getElementById('reset-button-block-end');
+        const restartFinalButton = document.getElementById('restart-final-button');
+
 
         const questionNumberLabel = document.getElementById('question-number-label');
         const questionTextLabel = document.getElementById('question-text-label');
@@ -1859,11 +1921,19 @@
         const feedbackTextContent = document.getElementById('feedback-text-content');
         const feedbackExplanationContent = document.getElementById('feedback-explanation-content');
 
-        const nextQuestionButton = document.getElementById('next-question-button');
+        const totalQuestionsBankCountLabel = document.getElementById('total-questions-bank-count');
+        const correctAnswersCountLabel = document.getElementById('correct-answers-count');
+        const incorrectAnswersCountLabel = document.getElementById('incorrect-answers-count');
+        const remainingQuestionsCountLabel = document.getElementById('remaining-questions-count');
 
-        const scoreText = document.getElementById('score-text');
-        const summaryText = document.getElementById('summary-text');
-        const detailedResultsContent = document.getElementById('detailed-results-content');
+        const blockCorrectDisplay = document.getElementById('block-correct-count-display');
+        const blockIncorrectDisplay = document.getElementById('block-incorrect-count-display');
+        const totalCorrectBlockEndDisplay = document.getElementById('total-correct-block-end');
+        const totalIncorrectBlockEndDisplay = document.getElementById('total-incorrect-block-end');
+        const remainingOnBlockEndDisplay = document.getElementById('remaining-on-block-end');
+
+        const finalScoreCorrectLabel = document.getElementById('final-score-correct');
+        const finalScoreIncorrectLabel = document.getElementById('final-score-incorrect');
 
 
         function shuffleArray(array) {
@@ -1871,28 +1941,68 @@
                 const j = Math.floor(Math.random() * (i + 1));
                 [array[i], array[j]] = [array[j], array[i]];
             }
+            return array;
         }
 
         function hideAllScreens() {
             welcomeScreen.classList.remove('active');
             quizScreen.classList.remove('active');
-            resultsScreen.classList.remove('active');
+            blockEndScreen.classList.remove('active');
+            finalResultsScreen.classList.remove('active');
+        }
+        
+        function resetQuizState() {
+            // Deep copy to prevent modifying original question objects if we add IDs later
+            questionsPool = shuffleArray(allQuestions.map(q => ({...q})));
+            currentBlockQuestions = [];
+            currentQuestionInBlockIndex = 0;
+            totalCorrectAnswers = 0;
+            totalIncorrectAttempts = 0;
+            blockCorrectCount = 0;
+            blockIncorrectCount = 0;
+
+            updateScoreDisplay();
+            feedbackMessageArea.style.display = 'none';
+            nextQuestionButton.style.display = 'none';
+            trueButton.disabled = false;
+            falseButton.disabled = false;
+            trueButton.className = 'option-button true-style'; // Reset button styles
+            falseButton.className = 'option-button false-style';
+
+
+            totalQuestionsBankCountLabel.textContent = allQuestions.length;
+            
+            hideAllScreens();
+            welcomeScreen.classList.add('active');
+
+            // Show reset button on welcome if there's saved state (optional)
+            // For now, just always show it or hide based on initial design
+            // resetButtonWelcome.classList.remove('hidden-initially'); 
         }
 
-        function initializeQuiz() {
-            shuffleArray(allQuestions);
-            currentQuizQuestions = allQuestions.slice(0, Math.min(questionsPerExam, allQuestions.length));
-            currentQuestionIndex = 0;
-            userAnswersRecord = [];
 
+        function startNewBlock() {
             hideAllScreens();
             quizScreen.classList.add('active');
 
-            nextQuestionButton.onclick = proceedToNextQuestion; // Asignar el handler
-            nextQuestionButton.textContent = "Siguiente Pregunta"; // Resetear texto
-            nextQuestionButton.style.display = 'none';
-            feedbackMessageArea.style.display = 'none';
+            blockCorrectCount = 0;
+            blockIncorrectCount = 0;
 
+            if (questionsPool.length === 0) {
+                showFinalResults();
+                return;
+            }
+
+            // Take up to BLOCK_SIZE questions from the pool
+            // We take from the end because unshift adds failed to the front
+            const numToTake = Math.min(BLOCK_SIZE, questionsPool.length);
+            currentBlockQuestions = [];
+            for (let i = 0; i < numToTake; i++) {
+                currentBlockQuestions.push(questionsPool.pop()); // Take from end
+            }
+            currentBlockQuestions = shuffleArray(currentBlockQuestions); // Shuffle current block
+
+            currentQuestionInBlockIndex = 0;
             loadQuestion();
         }
 
@@ -1900,16 +2010,23 @@
             feedbackMessageArea.style.display = 'none';
             feedbackTextContent.textContent = '';
             feedbackExplanationContent.textContent = '';
+            feedbackExplanationContent.style.display = 'none';
             nextQuestionButton.style.display = 'none';
             trueButton.disabled = false;
             falseButton.disabled = false;
+            trueButton.className = 'option-button true-style'; 
+            falseButton.className = 'option-button false-style';
 
-            if (currentQuestionIndex < currentQuizQuestions.length) {
-                const question = currentQuizQuestions[currentQuestionIndex];
-                questionNumberLabel.textContent = `Pregunta ${currentQuestionIndex + 1} de ${currentQuizQuestions.length}`;
+
+            if (currentQuestionInBlockIndex < currentBlockQuestions.length) {
+                const question = currentBlockQuestions[currentQuestionInBlockIndex];
+                questionNumberLabel.textContent = `Pregunta ${currentQuestionInBlockIndex + 1} de ${currentBlockQuestions.length} en este bloque.`;
                 questionTextLabel.textContent = question.statement;
+                updateScoreDisplay();
             } else {
-                showResults();
+                // This case should be handled by selectAnswer's logic leading to showBlockEndScreen
+                console.error("loadQuestion called when block is finished.");
+                showBlockEndScreen(); 
             }
         }
 
@@ -1917,107 +2034,133 @@
             trueButton.disabled = true;
             falseButton.disabled = true;
 
-            const currentQuestion = currentQuizQuestions[currentQuestionIndex];
-            userAnswersRecord.push({
-                statement: currentQuestion.statement,
-                userAnswer: userSelectedAnswer,
-                correctAnswer: currentQuestion.answer,
-                explanation: currentQuestion.explanation
-            });
+            const currentQuestion = currentBlockQuestions[currentQuestionInBlockIndex];
+            const isCorrect = userSelectedAnswer === currentQuestion.answer;
 
             feedbackMessageArea.style.display = 'block';
-            feedbackExplanationContent.textContent = '';
+            feedbackExplanationContent.style.display = 'none'; // Hide by default
 
-            if (userSelectedAnswer === currentQuestion.answer) {
+            if (isCorrect) {
                 feedbackTextContent.textContent = "¡Correcto!";
-                feedbackMessageArea.className = 'feedback-message-area correct'; // Usar la clase CSS definida
+                feedbackMessageArea.className = 'feedback-message-area correct';
+                if(userSelectedAnswer) trueButton.classList.add('selected-correct');
+                else falseButton.classList.add('selected-correct');
+
+                totalCorrectAnswers++;
+                blockCorrectCount++;
+                // Question is implicitly removed from pool because we took it from questionsPool
+                // and won't add it back.
             } else {
                 feedbackTextContent.textContent = "Incorrecto.";
-                feedbackMessageArea.className = 'feedback-message-area incorrect'; // Usar la clase CSS definida
-            }
-
-            if (currentQuestion.answer === false && currentQuestion.explanation && currentQuestion.explanation.trim() !== "") {
-                feedbackExplanationContent.textContent = `Justificación: ${currentQuestion.explanation}`;
-            }
-            else if (userSelectedAnswer !== currentQuestion.answer && currentQuestion.answer === true) {
-                 feedbackExplanationContent.textContent = `La respuesta correcta era: Verdadero.`;
-            }
-            else if (userSelectedAnswer !== currentQuestion.answer && currentQuestion.answer === false && (!currentQuestion.explanation || currentQuestion.explanation.trim() === "")) {
-                feedbackExplanationContent.textContent = `La respuesta correcta era: Falso. (No hay justificación detallada disponible).`;
-            }
-
-
-            if (currentQuestionIndex < currentQuizQuestions.length - 1) {
-                nextQuestionButton.textContent = "Siguiente Pregunta";
-                nextQuestionButton.onclick = proceedToNextQuestion; // Asegurar que llama a la función correcta
-                nextQuestionButton.style.display = 'block';
-            } else {
-                nextQuestionButton.textContent = "Ver Resultados";
-                nextQuestionButton.onclick = showResults;
-                nextQuestionButton.style.display = 'block';
-            }
-        }
-
-        function proceedToNextQuestion() {
-            currentQuestionIndex++;
-            loadQuestion();
-        }
-
-
-        function showResults() {
-            hideAllScreens();
-            resultsScreen.classList.add('active');
-
-            let correctCount = 0;
-            let incorrectCount = 0;
-
-            detailedResultsContent.innerHTML = '<h3>Respuestas Detalladas:</h3>';
-
-            userAnswersRecord.forEach((ans, index) => {
-                const itemDiv = document.createElement('div');
-                itemDiv.classList.add('result-item');
-
-                let resultText = `<p><b>Pregunta ${index + 1}:</b> ${ans.statement}</p>`;
-                resultText += `<p>Tu respuesta: ${ans.userAnswer ? 'Verdadero' : 'Falso'}. `;
-                resultText += `Respuesta correcta: ${ans.correctAnswer ? 'Verdadero' : 'Falso'}.</p>`;
-
-                if (ans.userAnswer === ans.correctAnswer) {
-                    correctCount++;
-                    itemDiv.classList.add('correct');
-                } else {
-                    incorrectCount++;
-                    itemDiv.classList.add('incorrect');
-                    if (ans.explanation && ans.explanation.trim() !== "") {
-                        resultText += `<p class="explanation">Explicación: ${ans.explanation}</p>`;
-                    }
+                feedbackMessageArea.className = 'feedback-message-area incorrect';
+                 if(userSelectedAnswer) { // User chose True, but it was False
+                    trueButton.classList.add('selected-incorrect');
+                    falseButton.classList.add('selected-correct'); // Show False was correct
+                } else { // User chose False, but it was True
+                    falseButton.classList.add('selected-incorrect');
+                    trueButton.classList.add('selected-correct'); // Show True was correct
                 }
-                itemDiv.innerHTML = resultText;
-                detailedResultsContent.appendChild(itemDiv);
-            });
 
-            const scoreValue = correctCount - (incorrectCount / 2);
-            const finalScore = Math.max(0, scoreValue).toFixed(2);
-            const totalPossibleBaseScore = currentQuizQuestions.length;
 
-            scoreText.textContent = `Puntuación Final: ${finalScore} / ${totalPossibleBaseScore}`;
-            summaryText.textContent = `Respuestas Correctas: ${correctCount}, Respuestas Incorrectas: ${incorrectCount}.`;
+                totalIncorrectAttempts++;
+                blockIncorrectCount++;
+                questionsPool.unshift(currentQuestion); // Add failed question to the FRONT of the pool
+                                                      // It will be shuffled if pool is large enough for next block
+            }
+            
+            // Show explanation if available AND (either incorrect OR (correct AND explanation exists))
+            if (currentQuestion.explanation && currentQuestion.explanation.trim() !== "") {
+                if (!isCorrect) { // Always show for incorrect if exists
+                     feedbackExplanationContent.textContent = `Respuesta correcta: ${currentQuestion.answer ? 'Verdadero' : 'Falso'}. Justificación: ${currentQuestion.explanation}`;
+                     feedbackExplanationContent.style.display = 'block';
+                } else { // For correct, only if an explanation is provided
+                    feedbackExplanationContent.textContent = `Justificación: ${currentQuestion.explanation}`;
+                    feedbackExplanationContent.style.display = 'block';
+                }
+            } else if (!isCorrect) { // No explanation, but incorrect
+                feedbackExplanationContent.textContent = `La respuesta correcta era: ${currentQuestion.answer ? 'Verdadero' : 'Falso'}.`;
+                feedbackExplanationContent.style.display = 'block';
+            }
+
+
+            nextQuestionButton.style.display = 'block';
+            if (currentQuestionInBlockIndex >= currentBlockQuestions.length - 1) {
+                 nextQuestionButton.textContent = "Ver Resultados del Bloque";
+            } else {
+                 nextQuestionButton.textContent = "Siguiente Pregunta";
+            }
+            updateScoreDisplay();
+        }
+
+        function proceedToNextQuestionOrBlockEnd() {
+            currentQuestionInBlockIndex++;
+            if (currentQuestionInBlockIndex < currentBlockQuestions.length) {
+                loadQuestion();
+            } else {
+                showBlockEndScreen();
+            }
+        }
+        
+        function updateScoreDisplay() {
+            correctAnswersCountLabel.textContent = totalCorrectAnswers;
+            incorrectAnswersCountLabel.textContent = totalIncorrectAttempts;
+            remainingQuestionsCountLabel.textContent = questionsPool.length;
+        }
+
+        function showBlockEndScreen() {
+            hideAllScreens();
+            blockEndScreen.classList.add('active');
+            
+            blockCorrectDisplay.textContent = blockCorrectCount;
+            blockIncorrectDisplay.textContent = blockIncorrectCount;
+            totalCorrectBlockEndDisplay.textContent = totalCorrectAnswers;
+            totalIncorrectBlockEndDisplay.textContent = totalIncorrectAttempts;
+            remainingOnBlockEndDisplay.textContent = questionsPool.length;
+
+            if (questionsPool.length === 0) {
+                nextBlockButton.style.display = 'none'; // No more blocks
+                // Optionally, change reset button text or behavior
+                const finishedAllMsg = document.createElement('p');
+                finishedAllMsg.textContent = "¡Has completado todas las preguntas del banco!";
+                finishedAllMsg.style.fontWeight = "bold";
+                finishedAllMsg.style.color = "green";
+                blockEndScreen.querySelector('.results-wrapper-shared').appendChild(finishedAllMsg);
+                // Could also directly call showFinalResults() or have a dedicated button
+                 setTimeout(showFinalResults, 2000); // Auto-redirect to final after a delay
+            } else {
+                nextBlockButton.style.display = 'inline-block';
+            }
+        }
+
+        function showFinalResults() {
+            hideAllScreens();
+            finalResultsScreen.classList.add('active');
+            finalScoreCorrectLabel.textContent = totalCorrectAnswers;
+            finalScoreIncorrectLabel.textContent = totalIncorrectAttempts;
         }
 
         // Event Listeners
-        startButton.addEventListener('click', initializeQuiz);
-        restartButton.addEventListener('click', () => {
-            hideAllScreens();
-            welcomeScreen.classList.add('active');
-            // No se llama a initializeQuiz aquí, el usuario debe pulsar "Comenzar Examen"
+        startButton.addEventListener('click', () => {
+            resetQuizState(); // Reset first, then start
+            startNewBlock();
         });
+        
+        nextQuestionButton.addEventListener('click', proceedToNextQuestionOrBlockEnd);
+        nextBlockButton.addEventListener('click', startNewBlock);
 
         trueButton.addEventListener('click', () => selectAnswer(true));
         falseButton.addEventListener('click', () => selectAnswer(false));
-        // El nextQuestionButton.onclick se asigna dinámicamente en initializeQuiz y selectAnswer
+
+        // Universal Reset Buttons
+        resetButtonWelcome.addEventListener('click', resetQuizState);
+        quizScreenResetButton.addEventListener('click', resetQuizState);
+        resetButtonBlockEnd.addEventListener('click', resetQuizState);
+        restartFinalButton.addEventListener('click', resetQuizState);
+
 
         // Initialize view
-        document.addEventListener('DOMContentLoaded', () => {
-            hideAllScreens();
-            welcomeScreen.classList.add('active');
-        });
+        document.addEventListener('DOMContentLoaded', resetQuizState);
+
     </script>
+</body>
+</html>
